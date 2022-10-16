@@ -6,14 +6,14 @@ Projekt bude riešený v jazyku **Java 19**.
 
 ## Rámce
 
-**Apache Commons** na spracúvanie CSV súborov a reťazcov.
-**Gson** na spracúvanie JSON súborov pre vlastný index.
+**Apache Commons** na spracúvanie CSV súborov a reťazcov.\
+**Gson** na spracúvanie JSON súborov pre vlastný index.\
 **Apache** Lucene bude využitý na indexovanie v druhej fáze projektu.
 
 ## Dáta
 
-[Slovenská Wikipedia](https://dumps.wikimedia.org/skwiki/latest/)
-[Česká Wikipedia](https://dumps.wikimedia.org/cswiki/latest/)
+[Slovenská Wikipedia](https://dumps.wikimedia.org/skwiki/latest/)\
+[Česká Wikipedia](https://dumps.wikimedia.org/cswiki/latest/)\
 [Maďarská Wikipedia](https://dumps.wikimedia.org/huwiki/latest/)
 
 ## Zámer
