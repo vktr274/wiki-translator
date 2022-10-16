@@ -82,6 +82,8 @@ Pri vyhľadávaní sa vráti zoznam dokumentov, ktoré zodpovedajú dopytu.
 - `lang` može byť `sk`, `cs` alebo `hu`,
 - `qtext` je text, ktorý sa má vyhľadávať v danom jazyku.
 
+Program sa ukončuje príkazom `exit`.
+
 **Príklad:**
 
 `sk: covid test` vráti nasledovný výsledok:
