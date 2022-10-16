@@ -2,7 +2,7 @@
 
 Téma môjho projektu je **Vytvorenie multilingvistického slovníka z wikipédie slovenčina vs. iné jazyky (aspoň 2), vytvoriť spoločný slovník spájajúci jazyky s možnosťou vyhľadávania**.
 
-Projekt bude riešený v jazyku **Java 19**.
+Projekt bude riešený v jazyku **Java 19** s build nástrojom Maven.
 
 ## Rámce
 
