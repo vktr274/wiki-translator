@@ -1,2 +1,4 @@
 .env
-dataset
+*.sql*
+*.bz2
+dataset/*/output
