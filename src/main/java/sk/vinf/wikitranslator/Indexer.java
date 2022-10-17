@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 public class Indexer {
     private final CSVParser parser;
     private final Gson gson;
-    public final static String delim = " \t\n\r\f._-,/()=+\"#?!\\%*,;~@&$€@{}[]<>:^0123456789";
+    public final static String delim = " \t\n\r\f._-,/()=+\"#?!\\%*,;~@&$€@§{}[]<>:^0123456789";
 
     Indexer() throws IOException {
         parser = CSVParser.parse(
