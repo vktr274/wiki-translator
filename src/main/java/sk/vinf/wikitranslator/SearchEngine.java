@@ -42,7 +42,7 @@ public class SearchEngine {
 
     private boolean checkInput(String input) {
         var parts = input.split(":");
-        if (parts.length != 2 || !Set.of("sk", "cs", "hu").contains(parts[0])) {
+        if (parts.length < 2 || !Set.of("sk", "cs", "hu").contains(parts[0])) {
             return false;
         }
         return true;
