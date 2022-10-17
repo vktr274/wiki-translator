@@ -57,21 +57,21 @@ public class Indexer {
 
             while (tokenizerSk.hasMoreTokens()) {
                 var token = tokenizerSk.nextToken().toLowerCase().replace("'", "");
-                if (!token.isEmpty()) {
+                if (token.length() > 1) {
                     token = StringUtils.stripAccents(token);
                     skList.add(token);
                 }
             }
             while (tokenizerCs.hasMoreTokens()) {
                 var token = tokenizerCs.nextToken().toLowerCase().replace("'", "");
-                if (!token.isEmpty()) {
+                if (token.length() > 1) {
                     token = StringUtils.stripAccents(token);
                     csList.add(token);
                 }
             }
             while (tokenizerHu.hasMoreTokens()) {
                 var token = tokenizerHu.nextToken().toLowerCase().replace("'", "");
-                if (!token.isEmpty() && !Set.of("ös","os", "es", "as").contains(token)) {
+                if (token.length() > 1 && !Set.of("ös","os", "es", "as").contains(token)) {
                     token = StringUtils.stripAccents(token);
                     huList.add(token);
                 }
@@ -111,7 +111,7 @@ public class Indexer {
 
             while (tokenizerSk.hasMoreTokens()) {
                 var token = tokenizerSk.nextToken().toLowerCase().replace("'", "");
-                if (!token.isEmpty()) {
+                if (token.length() > 1) {
                     token = StringUtils.stripAccents(token);
                     if (mapInvertedSk.containsKey(token)) {
                         mapInvertedSk.get(token).add(id);
@@ -122,7 +122,7 @@ public class Indexer {
             }
             while (tokenizerCs.hasMoreTokens()) {
                 var token = tokenizerCs.nextToken().toLowerCase().replace("'", "");
-                if (!token.isEmpty()) {
+                if (token.length() > 1) {
                     token = StringUtils.stripAccents(token);
                     if (mapInvertedCs.containsKey(token)) {
                         mapInvertedCs.get(token).add(id);
@@ -133,7 +133,7 @@ public class Indexer {
             }
             while (tokenizerHu.hasMoreTokens()) {
                 var token = tokenizerHu.nextToken().toLowerCase().replace("'", "");
-                if (!token.isEmpty() && !Set.of("ös","os", "es", "as").contains(token)) {
+                if (token.length() > 1 && !Set.of("ös","os", "es", "as").contains(token)) {
                     token = StringUtils.stripAccents(token);
                     if (mapInvertedHu.containsKey(token)) {
                         mapInvertedHu.get(token).add(id);
