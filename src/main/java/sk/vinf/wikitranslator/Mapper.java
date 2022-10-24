@@ -51,5 +51,9 @@ public class Mapper {
         fwSk.write(gson.toJson(skMap));
         fwCs.write(gson.toJson(csMap));
         fwHu.write(gson.toJson(huMap));
+
+        fwSk.close();
+        fwCs.close();
+        fwHu.close();
     }
 }
