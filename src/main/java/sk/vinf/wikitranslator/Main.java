@@ -79,7 +79,7 @@ public class Main
                 break;
             case 5:
                 try {
-                    var mapper = new Mapper();
+                    var mapper = new TranslationMapper();
                     mapper.mapLanguages();
                     mapper.close();
                     System.out.println("Success");
