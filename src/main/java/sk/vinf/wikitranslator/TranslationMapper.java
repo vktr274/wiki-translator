@@ -13,11 +13,11 @@ import org.apache.commons.csv.CSVParser;
 
 import com.google.gson.Gson;
 
-public class Mapper {
+public class TranslationMapper {
     private final CSVParser parser;
     private final Gson gson;
 
-    Mapper() throws IOException {
+    TranslationMapper() throws IOException {
         parser = CSVParser.parse(
             Files.newBufferedReader(Path.of("sk-cs-hu.csv")),
             CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build()
