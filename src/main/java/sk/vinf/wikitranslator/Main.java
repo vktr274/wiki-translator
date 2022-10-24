@@ -26,12 +26,10 @@ public class Main
         var lang = "";
 
         System.out.println("1. exit");
-        System.out.println("2. find article title pairs");
-        System.out.println("3. create sk-cs-hu conjunction");
-        System.out.println("4. clear documents");
-        System.out.println("5. create forward index");
-        System.out.println("6. create inverted index");
-        System.out.println("7. use translator");
+        System.out.println("2. find article ID pairs");
+        System.out.println("3. create sk-cs-hu ID conjunction");
+        System.out.println("4. create docs");
+        System.out.println("5. create ID mapping");
         
         while (true) {
             try {
@@ -71,8 +69,8 @@ public class Main
                 break;
             case 4:
                 try {
-                    var documentCleaner = new DocumentCleaner();
-                    documentCleaner.clean();
+                    var documentCleaner = new DocumentManager();
+                    documentCleaner.createDocs();
                     documentCleaner.close();
                     System.out.println("Success");
                 } catch (Exception e) {
@@ -81,26 +79,10 @@ public class Main
                 break;
             case 5:
                 try {
-                    var indexer = new Indexer();
-                    indexer.createForwardIndex();
+                    var mapper = new Mapper();
+                    mapper.mapLanguages();
+                    mapper.close();
                     System.out.println("Success");
-                } catch (Exception e) {
-                    System.out.println("Error");
-                }
-                break;
-            case 6:
-                try {
-                    var indexer = new Indexer();
-                    indexer.createInvertedIndex();
-                    System.out.println("Success");
-                } catch (Exception e) {
-                    System.out.println("Error");
-                }
-                break;
-            case 7:
-                try {
-                    var searchEngine = new SearchEngine();
-                    searchEngine.start();
                 } catch (Exception e) {
                     System.out.println("Error");
                 }

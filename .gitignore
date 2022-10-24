@@ -2,3 +2,5 @@
 *.sql*
 *.bz2
 dataset/*/output
+*.xml
+documents-*.csv

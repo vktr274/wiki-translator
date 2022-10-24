@@ -1,0 +1,24 @@
+Started sk
+Extracted 10000 sk articles
+Extracted 20000 sk articles
+Extracted 30000 sk articles
+Extracted 40000 sk articles
+Extracted 50000 sk articles
+Extracted 60000 sk articles
+Extracted 62073 sk articles
+Started cs
+Extracted 10000 cs articles
+Extracted 20000 cs articles
+Extracted 30000 cs articles
+Extracted 40000 cs articles
+Extracted 50000 cs articles
+Extracted 60000 cs articles
+Extracted 65932 cs articles
+Started hu
+Extracted 10000 hu articles
+Extracted 20000 hu articles
+Extracted 40000 hu articles
+Extracted 50000 hu articles
+Extracted 60000 hu articles
+Extracted 65502 hu articles
+Success

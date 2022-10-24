@@ -2,8 +2,8 @@ FROM python:slim
 
 WORKDIR /wiki
 
-COPY skwiki-latest-pages-articles.xml.bz2 /wiki/
+COPY skwiki-latest-pages-articles.xml.bz2 .
 
 RUN pip install wikiextractor
 
-CMD wikiextractor --json --no-templates --output /wiki/output /wiki/skwiki-latest-pages-articles.xml.bz2
+CMD wikiextractor --json --output output skwiki-latest-pages-articles.xml.bz2

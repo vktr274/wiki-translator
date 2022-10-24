@@ -2,8 +2,8 @@ FROM python:slim
 
 WORKDIR /wiki
 
-COPY huwiki-latest-pages-articles.xml.bz2 /wiki/
+COPY huwiki-latest-pages-articles.xml.bz2 .
 
 RUN pip install wikiextractor
 
-CMD wikiextractor --json --no-templates --output /wiki/output /wiki/huwiki-latest-pages-articles.xml.bz2
+CMD wikiextractor --json --output output huwiki-latest-pages-articles.xml.bz2

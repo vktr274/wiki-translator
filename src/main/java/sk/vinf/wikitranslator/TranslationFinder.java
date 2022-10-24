@@ -48,7 +48,6 @@ public class TranslationFinder {
             return;
         }
 
-        // Find article IDs in Slovak and article titles in lang
         var ps = connSk.prepareStatement(
         "SELECT ll_from, ll_title FROM wiki_sk.langlinks WHERE ll_lang = ?"
         );
@@ -56,32 +55,31 @@ public class TranslationFinder {
         var res = ps.executeQuery();
 
         var printer = new CSVPrinter(new FileWriter("sk-" + lang + ".csv"), CSVFormat.DEFAULT);
-        printer.printRecord("sk_id", "sk_title", lang + "_title");
+        printer.printRecord("sk_id", lang + "_id");
 
         while (res.next()) {
-            var llTitle = res.getString("ll_title").split(":");
+            var llTitle = res.getString("ll_title").split(":", 2);
             if (llTitle.length == 0) {
                 System.out.println("Title 0");
                 continue;
             }
-            var langTitle = llTitle[llTitle.length - 1];
-            if (langTitle.isEmpty()) {
-                System.out.println(lang + " title missing");
+            var title = llTitle[llTitle.length - 1].replace(" ", "_");
+            if (title.isEmpty()) {
+                System.out.println("Title missing");
                 continue;
             }
-            var fromId = res.getInt("ll_from");
-            var psFrom = connSk.prepareStatement(
-                "SELECT page_title FROM wiki_sk.page WHERE page_id = ?"
-            );
-            psFrom.setInt(1, fromId);
-            var fromTitle = psFrom.executeQuery();
-            if (!fromTitle.next()) {
-                System.out.println("sk title missing");
+            var psLang = connLang.prepareStatement("SELECT page_id FROM wiki_" + lang + ".page WHERE page_title = ?");
+            psLang.setString(1, title);
+            var resID = psLang.executeQuery();
+            if (!resID.next()) {
+                System.out.println("No page_id");
                 continue;
             }
-            var fromTitleStr = fromTitle.getString("page_title").replace("_", " ");
-            System.out.println("ID: " + fromId + " - " + fromTitleStr + " = " + langTitle);
-            printer.printRecord(fromId, fromTitleStr, langTitle);
+            var from = res.getInt("ll_from");
+            var to = resID.getInt("page_id");
+            psLang.close();
+            System.out.println(from + " - " + to);
+            printer.printRecord(from, to);
         }
         printer.close();
         connSk.close();
@@ -94,7 +92,7 @@ public class TranslationFinder {
         var skHuCsv = Path.of("sk-hu.csv");
 
         var printer = new CSVPrinter(new FileWriter("sk-cs-hu.csv"), CSVFormat.DEFAULT);
-        printer.printRecord("sk_title", "cs_title", "hu_title");
+        printer.printRecord("sk_id", "cs_id", "hu_id");
 
         var skCsParser = CSVParser.parse(
             skCsCsv,
@@ -117,15 +115,14 @@ public class TranslationFinder {
                 for (var recordSkHu : skHuRecords) {
                     var skId = recordSkCs.get("sk_id");
                     if (skId.equals(recordSkHu.get("sk_id"))) {
-                        var skTitle = recordSkCs.get("sk_title");
-                        var csTitle = recordSkCs.get("cs_title");
-                        var huTitle = recordSkHu.get("hu_title");
+                        var csId = recordSkCs.get("cs_id");
+                        var huId = recordSkHu.get("hu_id");
                         printer.printRecord(
-                            skTitle,
-                            csTitle,
-                            huTitle
+                            skId,
+                            csId,
+                            huId
                         );
-                        System.out.println(skTitle + "-" + csTitle + "-" + huTitle);
+                        System.out.println(skId + "-" + csId + "-" + huId);
                     }
                 }
             }
@@ -134,15 +131,14 @@ public class TranslationFinder {
                 for (var recordSkCs : skCsRecords) {
                     var skId = recordSkCs.get("sk_id");
                     if (skId.equals(recordSkHu.get("sk_id"))) {
-                        var skTitle = recordSkCs.get("sk_title");
-                        var csTitle = recordSkCs.get("cs_title");
-                        var huTitle = recordSkHu.get("hu_title");
+                        var csId = recordSkCs.get("cs_id");
+                        var huId = recordSkHu.get("hu_id");
                         printer.printRecord(
-                            skTitle,
-                            csTitle,
-                            huTitle
+                            skId,
+                            csId,
+                            huId
                         );
-                        System.out.println(skTitle + "-" + csTitle + "-" + huTitle);
+                        System.out.println(skId + "-" + csId + "-" + huId);
                     }
                 }
             }

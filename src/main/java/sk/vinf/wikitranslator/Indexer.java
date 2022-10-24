@@ -18,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
 
+// v1 - Custom indexing class
+@Deprecated
 public class Indexer {
     private final CSVParser parser;
     private final Gson gson;

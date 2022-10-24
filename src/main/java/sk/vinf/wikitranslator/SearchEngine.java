@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+// v1 - Custom search tool using the custom index
+@Deprecated
 public class SearchEngine {
     private final Gson gson;
     private final List<CSVRecord> docs;
