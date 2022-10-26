@@ -1,14 +1,15 @@
 package sk.vinf.wikitranslator;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main 
 {
-    private static String getLang() {
+    private static String getLang(List<String> langs) {
         var scanner = new Scanner(System.in);
         var lang = "";
-        while (!(lang.equals("cs") || lang.equals("hu"))) {
-            System.out.println("Enter language (cs or hu)");
+        while (!langs.contains(lang)) {
+            System.out.println("Enter language from " + langs);
             try {
                 lang = scanner.nextLine();
             } catch (Exception e) {
@@ -23,13 +24,14 @@ public class Main
     {
         var scanner = new Scanner(System.in);
         var input = 0;
-        var lang = "";
 
         System.out.println("1. exit");
         System.out.println("2. find article ID pairs");
         System.out.println("3. create sk-cs-hu ID conjunction");
         System.out.println("4. create docs");
         System.out.println("5. create ID mapping");
+        System.out.println("6. create Lucene index");
+        System.out.println("7. search translations");
         
         while (true) {
             try {
@@ -48,16 +50,16 @@ public class Main
             case 1:
                 break;
             case 2:
-                lang = getLang();
                 try {
-                    var translationFinder = new TranslationFinder(lang);
+                    var translationFinder = new TranslationFinder(
+                        getLang(List.of("cs", "hu"))
+                    );
                     translationFinder.find();
                     translationFinder.close();
                     System.out.println("Success");
                 } catch (Exception e) {
                     System.out.println("Error");
                 }
-                lang = "";
                 break;
             case 3:
                 try {
@@ -82,6 +84,24 @@ public class Main
                     var mapper = new TranslationMapper();
                     mapper.mapLanguages();
                     mapper.close();
+                    System.out.println("Success");
+                } catch (Exception e) {
+                    System.out.println("Error");
+                }
+            case 6:
+                try {
+                    var luceneIndexer = new LuceneManager();
+                    luceneIndexer.indexLanguage(getLang(
+                        List.of("sk", "cs", "hu")
+                    ));
+                    System.out.println("Success");
+                } catch (Exception e) {
+                    System.out.println("Error");
+                }
+            case 7:
+                try {
+                    var luceneIndexer = new LuceneManager();
+                    luceneIndexer.start();
                     System.out.println("Success");
                 } catch (Exception e) {
                     System.out.println("Error");
