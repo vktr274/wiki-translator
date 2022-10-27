@@ -1,6 +1,12 @@
 package sk.vinf.wikitranslator;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -20,11 +26,13 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.store.FSDirectory;
 
@@ -116,7 +124,7 @@ public class LuceneManager {
         } else if (at.equals("T|t") || at.equals("t|T")) {
             queryTitle = queryParserTitle.parse(qtext);
             queryText = queryParserText.parse(qtext);
-
+            
             boolQueryBuilder
                 .add(queryTitle, Occur.SHOULD)
                 .add(queryText, Occur.SHOULD);
@@ -132,16 +140,57 @@ public class LuceneManager {
         var topDocs = isearcher.search(boolQuery, 5);
         var idMapping = getIdMapping(lang);
 
+        var lang2 = "";
+        var lang3 = "";
+
+        if (lang.equals("sk")) {
+            lang2 = "cs";
+            lang3 = "hu";
+        } else if (lang.equals("cs")) {
+            lang2 = "sk";
+            lang3 = "hu";
+        } else if (lang.equals("hu")) {
+            lang2 = "sk";
+            lang3 = "cs";
+        }
+
+        String[] langs = { lang2, lang3 };
+        
+        var out = new OutputStreamWriter(new FileOutputStream(new File("output.txt")), StandardCharsets.UTF_8);
+        out.write("ID Language Title\n");
+        out.write("---------------------------------------------\n");
+
         for (var scoreDoc : topDocs.scoreDocs) {
             var hit = isearcher.doc(scoreDoc.doc);
             var idFound = hit.get("id");
-            System.out.println(
-                "ID: " + idFound +
-                " Title: " + hit.get("title") +
-                " Translation IDs: " + idMapping.get(idFound)
-            );
+            var translationIds = idMapping.get(idFound);
+            var hitText = hit.get("text");
+
+            out.write(idFound + " " + lang.toUpperCase() + " \"" + hit.get("title") + "\"\n");
+            out.write(hitText.substring(0, hitText.length() >= 256 ? 256 : hitText.length()) + "\n");
+
+            for (var i = 0; i < translationIds.size(); i++) {
+                var queryId = new TermQuery(new Term("id", translationIds.get(i)));
+                var directoryLang = FSDirectory.open(Path.of("index", langs[i]));
+                var ireaderLang = DirectoryReader.open(directoryLang);
+                var isearcherLang = new IndexSearcher(ireaderLang);
+                var searchLang = isearcherLang.search(queryId, 1);
+                var hitLang = isearcherLang.doc(searchLang.scoreDocs[0].doc);
+                
+                out.write(
+                    hitLang.get("id") + " " +
+                    langs[i].toUpperCase() + " \"" +
+                    hitLang.get("title") + "\"\n"
+                );
+
+                hitText = hitLang.get("text");
+                out.write(hitText.substring(0, hitText.length() >= 256 ? 256 : hitText.length()) + "\n");
+            }
+
+            out.write("---------------------------------------------\n");
         }
 
+        out.close();
         analyzer.close();
     }
 
