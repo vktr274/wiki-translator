@@ -31,7 +31,7 @@ public class Main
         System.out.println("4. create docs");
         System.out.println("5. create ID mapping");
         System.out.println("6. create Lucene index");
-        System.out.println("7. search translations");
+        System.out.println("7. use translation search");
         
         while (true) {
             try {
@@ -100,8 +100,8 @@ public class Main
                 }
             case 7:
                 try {
-                    var luceneIndexer = new LuceneManager();
-                    luceneIndexer.start();
+                    var luceneManager = new LuceneManager();
+                    luceneManager.start();
                     System.out.println("Success");
                 } catch (Exception e) {
                     System.out.println("Error");

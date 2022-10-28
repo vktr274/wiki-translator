@@ -1,12 +1,12 @@
 package sk.vinf.wikitranslator;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -67,6 +67,7 @@ public class LuceneManager {
 
     public void start() throws IOException, IllegalArgumentException, NullPointerException, ParseException {
         var scanner = new Scanner(System.in, "Cp852");
+        var gson = new Gson();
 
         while (true) {
             System.out.println("Enter query");
@@ -74,13 +75,19 @@ public class LuceneManager {
             if (input.equals("exit")) {
                 break;
             }
-            search(input);
+            var result = new HashMap<String, ArrayList<HashMap<String, HashMap<String, String>>>>();
+            var searchResult = search(input);
+            result.put("searchResult", searchResult);
+            var fw = new FileWriter(new File("output.json"), StandardCharsets.UTF_8);
+            var json = gson.toJson(result);
+            fw.write(json);
+            fw.close();
         }
 
         scanner.close();
     }
 
-    private void search(String inputQuery) throws IllegalArgumentException, IOException, ParseException, NullPointerException {
+    public ArrayList<HashMap<String, HashMap<String, String>>> search(String inputQuery) throws IllegalArgumentException, IOException, ParseException, NullPointerException {
         if (!checkInput(inputQuery)) {
             throw new IllegalArgumentException("Query should have a lang:at:qtext syntax");
         }
@@ -154,42 +161,55 @@ public class LuceneManager {
 
         String[] langs = { lang2, lang3 };
         
-        var out = new OutputStreamWriter(new FileOutputStream(new File("output.txt")), StandardCharsets.UTF_8);
-        out.write("ID Language Title\n");
-        out.write("---------------------------------------------\n");
+        ArrayList<HashMap<String, HashMap<String, String>>> searchResult = new ArrayList<>();
+        var scoreDocs = topDocs.scoreDocs;
 
-        for (var scoreDoc : topDocs.scoreDocs) {
-            var hit = isearcher.doc(scoreDoc.doc);
-            var idFound = hit.get("id");
-            var translationIds = idMapping.get(idFound);
+        System.out.println("ID Language Title");
+        System.out.println("--------------------------------------");
+
+        for (var i = 0; i < scoreDocs.length; i++) {
+            var hit = isearcher.doc(scoreDocs[i].doc);
+            var hitId = hit.get("id");
             var hitText = hit.get("text");
+            var hitTitle = hit.get("title");
+            var translationIds = idMapping.get(hitId);
+            
+            HashMap<String, HashMap<String, String>> map = new HashMap<>();
+            HashMap<String, String> mapLang = new HashMap<>();
 
-            out.write(idFound + " " + lang.toUpperCase() + " \"" + hit.get("title") + "\"\n");
-            out.write(hitText.substring(0, hitText.length() >= 256 ? 256 : hitText.length()) + "\n");
+            System.out.println(hitId + " " + lang.toUpperCase() + " " + hitTitle);
 
-            for (var i = 0; i < translationIds.size(); i++) {
-                var queryId = new TermQuery(new Term("id", translationIds.get(i)));
-                var directoryLang = FSDirectory.open(Path.of("index", langs[i]));
+            mapLang.put("id", hitId);
+            mapLang.put("title", hitTitle);
+            mapLang.put("text", hitText);
+            map.put(lang, mapLang);
+            
+            for (var j = 0; j < translationIds.size(); j++) {
+                mapLang = new HashMap<>();
+                var queryId = new TermQuery(new Term("id", translationIds.get(j)));
+                var directoryLang = FSDirectory.open(Path.of("index", langs[j]));
                 var ireaderLang = DirectoryReader.open(directoryLang);
                 var isearcherLang = new IndexSearcher(ireaderLang);
                 var searchLang = isearcherLang.search(queryId, 1);
-                var hitLang = isearcherLang.doc(searchLang.scoreDocs[0].doc);
-                
-                out.write(
-                    hitLang.get("id") + " " +
-                    langs[i].toUpperCase() + " \"" +
-                    hitLang.get("title") + "\"\n"
-                );
+                hit = isearcherLang.doc(searchLang.scoreDocs[0].doc);
 
-                hitText = hitLang.get("text");
-                out.write(hitText.substring(0, hitText.length() >= 256 ? 256 : hitText.length()) + "\n");
+                hitId = hit.get("id");
+                hitText = hit.get("text");
+                hitTitle = hit.get("title");
+
+                System.out.println(hitId + " " + langs[j].toUpperCase() + " " + hitTitle);
+
+                mapLang.put("id", hitId);
+                mapLang.put("title", hitTitle);
+                mapLang.put("text", hitText);
+                map.put(langs[j], mapLang);
             }
-
-            out.write("---------------------------------------------\n");
+            searchResult.add(map);
+            System.out.println("--------------------------------------");
         }
 
-        out.close();
         analyzer.close();
+        return searchResult;
     }
 
     public void indexLanguage(String lang) throws IOException, NullPointerException {
