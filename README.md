@@ -5,7 +5,7 @@ Predmet: Vyhľadávanie informácií
 
 Téma môjho projektu je **Vytvorenie multilingvistického slovníka z wikipédie slovenčina vs. iné jazyky (aspoň 2), vytvoriť spoločný slovník spájajúci jazyky s možnosťou vyhľadávania**.
 
-Projekt bude riešený v jazyku **Java 19** s build nástrojom **Maven**.
+Projekt bude riešený v jazyku **Java 17** s build nástrojom **Maven**.
 
 ## Rámce
 
@@ -32,6 +32,44 @@ Medzijazyčné odkazy sú uchovávané v relačnej databáze v tabuľke *langlin
 ## Verzia 2
 
 **TODO** použitím Apache Spark a Lucene.
+
+Použité verzie:
+
+[Apache Spark 3.3.1 pre-built for Hadoop](https://www.apache.org/dyn/closer.lua/spark/spark-3.3.1/spark-3.3.1-bin-hadoop3.tgz)
+
+[Hadoop 3.3.1 Windows Bin](https://github.com/kontext-tech/winutils/tree/master/hadoop-3.3.1/bin)
+
+```env
+SPARK_HOME=absolute\path\to\spark-3.3.1-bin-hadoop3
+HADOOP_HOME=absolute\path\to\hadoop-3.3.1
+```
+
+K premennej `PATH` treba potom pridať:
+
+```env
+%SPARK_HOME%\bin
+%HADOOP_HOME%\bin
+```
+
+K Java argumentom treba pridať `--add-exports java.base/sun.nio.ch=ALL-UNNAMED`.
+
+`spark-class org.apache.spark.deploy.master.Master --host localhost`
+
+Dependencies pre Spark **musia** byť nastavené nasledovne, keďže použitá verzia Spark používa Scala 2.12
+
+```xml
+<dependency>
+    <groupId>org.apache.spark</groupId>
+    <artifactId>spark-core_2.12</artifactId>
+    <version>3.3.1</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.spark</groupId>
+    <artifactId>spark-sql_2.12</artifactId>
+    <version>3.3.1</version>
+    <scope>provided</scope>
+</dependency>
+```
 
 ## Verzia 1
 

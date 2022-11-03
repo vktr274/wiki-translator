@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}",
+            "vmArgs": "--add-exports java.base/sun.nio.ch=ALL-UNNAMED"
+        },
+        {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "mainClass": "sk.vinf.wikitranslator.Main",
+            "projectName": "WikiTranslator",
+            "vmArgs": "--add-exports java.base/sun.nio.ch=ALL-UNNAMED"
+        }
+    ]
+}

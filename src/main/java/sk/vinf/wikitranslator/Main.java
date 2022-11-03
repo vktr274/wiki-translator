@@ -3,6 +3,9 @@ package sk.vinf.wikitranslator;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
+
 public class Main 
 {
     private static String getLang(List<String> langs) {
@@ -22,6 +25,9 @@ public class Main
 
     public static void main(String[] args)
     {
+        var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
+        var ctx = new JavaSparkContext(sparkConf);
+
         var scanner = new Scanner(System.in);
         var input = 0;
 
