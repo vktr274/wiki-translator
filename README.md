@@ -11,7 +11,8 @@ Projekt bude riešený v jazyku **Java 17** s build nástrojom **Maven**.
 
 **Apache Commons** na spracúvanie CSV súborov a reťazcov.\
 **Gson** na spracúvanie JSON súborov pre vlastný index.\
-**Apache** Lucene bude využitý na indexovanie v druhej fáze projektu.
+**Apache Lucene** bude využitý na indexovanie v druhej fáze projektu.
+**Apache Spark** bude využitý na distribuované spracovanie v druhej fáze projektu.
 
 ## Dáta
 
@@ -51,10 +52,6 @@ K premennej `PATH` treba potom pridať:
 %HADOOP_HOME%\bin
 ```
 
-K Java argumentom treba pridať `--add-exports java.base/sun.nio.ch=ALL-UNNAMED`.
-
-`spark-class org.apache.spark.deploy.master.Master --host localhost`
-
 Dependencies pre Spark **musia** byť nastavené nasledovne, keďže použitá verzia Spark používa Scala 2.12
 
 ```xml
@@ -70,6 +67,10 @@ Dependencies pre Spark **musia** byť nastavené nasledovne, keďže použitá v
     <scope>provided</scope>
 </dependency>
 ```
+
+K Java argumentom treba pridať `--add-exports java.base/sun.nio.ch=ALL-UNNAMED`.
+
+Master node sa spúšťa pomocou `spark-class org.apache.spark.deploy.master.Master --host localhost`. Nasledovne je možné spustiť WikiTranslator.
 
 ## Verzia 1
 
