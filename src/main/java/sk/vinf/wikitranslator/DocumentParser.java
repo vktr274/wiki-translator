@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-/* import java.util.Iterator; */
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -18,23 +17,30 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class DocumentManager {
+public class DocumentParser {
     private final CSVParser parser;
     private final Gson gson;
+    private final JavaSparkContext ctx;
     
-    DocumentManager() throws IOException {
+    DocumentParser() throws IOException {
         parser = CSVParser.parse(
             Files.newBufferedReader(Path.of("sk-cs-hu.csv")),
             CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build()
         );
         gson = new Gson();
+        var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
+        ctx = new JavaSparkContext(sparkConf);
     }
 
     public void close() throws IOException {
         parser.close();
+        ctx.close();
     }
 
     public static boolean isInt(String string) {
