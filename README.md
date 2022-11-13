@@ -138,7 +138,7 @@ Nástroj sa spúšťa pre každý jazyk zvlášť:
 - Pre `cs` jazyk v priečinku `dataset/cs-articles`, kde sa musí nachádzať dump `cswiki-latest-pages-articles.xml.bz2`.
 - Pre `hu` jazyk v priečinku `dataset/hu-articles`, kde sa musí nachádzať dump `huwiki-latest-pages-articles.xml.bz2`.
 
-Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Na to slúži príkaz `4`, ktorým sa dajú vytvoriť `sk`, `cs` a `hu` dokumenty. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomoou Apache Lucene budú indexovať.
+Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Na to slúži príkaz `4`, ktorým sa dajú vytvoriť `sk`, `cs` a `hu` dokumenty. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomocou Apache Lucene budú indexovať.
 
 ### Indexovanie
 
@@ -187,6 +187,57 @@ Schéma výsledného JSON súboru je:
     ]
 }
 ```
+
+**Príklad:**
+
+Vstup `sk:T&t:covid test` vráti do konzoly výsledok:
+
+```txt
+ID Language Title
+--------------------------------------
+667655 SK Rýchly antigénový test COVID-19
+1688511 CS Rychlý antigenní test na covid-19
+1773397 HU Covid19-antigén gyorsteszt
+--------------------------------------
+667137 SK Rýchly antigénový test
+1688600 CS Rychlý antigenní test
+1774498 HU Antigén gyorsteszt
+--------------------------------------
+645499 SK COVID-19
+1564791 CS Covid-19
+1683177 HU Covid19
+--------------------------------------
+102017 SK Test
+242872 CS Testování
+11604 HU Test (egyértelműsítő lap)
+--------------------------------------
+646838 SK Pandémia ochorenia COVID-19
+1559185 CS Pandemie covidu-19
+1679312 HU Covid19-pandémia
+--------------------------------------
+905 SK Turingov test
+4218 CS Turingův test
+182823 HU Turing-teszt
+--------------------------------------
+444545 SK Kolmogorovov-Smirnovov test
+324710 CS Kolmogorovův?Smirnovův test
+979361 HU Kolmogorov?Szmirnov-próba
+--------------------------------------
+339758 SK Klasická teória testov
+913998 CS Klasická testová teorie
+493883 HU Klasszikus tesztelmélet
+--------------------------------------
+652542 SK Vakcína proti chorobe COVID-19
+1651518 CS Vakcína proti covidu-19
+1689580 HU Covid19-vakcina
+--------------------------------------
+526502 SK Crash Test Dummies
+694195 CS Crash Test Dummies
+1830033 HU Crash Test Dummies
+--------------------------------------
+```
+
+Celý výsledok je v súbore [output.json](output.json).
 
 ## Verzia 1
 
