@@ -1,11 +1,11 @@
 # Multilingvistický slovník
 
-Autor: Viktor Modroczký\
-Predmet: Vyhľadávanie informácií
+**Autor:** Viktor Modroczký\
+**Predmet:** Vyhľadávanie informácií
 
-Téma môjho projektu je **Vytvorenie multilingvistického slovníka z wikipédie slovenčina vs. iné jazyky (aspoň 2), vytvoriť spoločný slovník spájajúci jazyky s možnosťou vyhľadávania**.
+Téma projektu je **Vytvorenie multilingvistického slovníka z wikipédie slovenčina vs. iné jazyky (aspoň 2), vytvoriť spoločný slovník spájajúci jazyky s možnosťou vyhľadávania**.
 
-Projekt bude riešený v jazyku **Java 17** s build nástrojom **Maven**.
+Projekt je riešený v jazyku **Java 17** s build nástrojom **Maven**.
 
 ## Rámce a knižnice
 
@@ -18,7 +18,7 @@ Projekt bude riešený v jazyku **Java 17** s build nástrojom **Maven**.
 **Dotenv-Java** na otváranie `.env` súboru.\
 **MySQL Connector Java** na pripojenie k MySQL databáze.
 
-## Vo verzii 1
+### Vo verzii 1
 
 **Apache Commons** na spracúvanie CSV súborov a reťazcov.\
 **Gson** na spracúvanie JSON súborov pre vlastný index.
@@ -85,7 +85,7 @@ K Java argumentom treba pridať `--add-exports java.base/sun.nio.ch=ALL-UNNAMED`
 
 Master node sa spúšťa pomocou `spark-class org.apache.spark.deploy.master.Master --host localhost`.
 
-Worker node sa spúšťa pomocou `spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077`.
+Worker node-y sa spúšťajú pomocou `spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077`.
 
 Nasledovne je možné spustiť WikiTranslator.
 
@@ -110,7 +110,7 @@ USER=database_owner
 PW=password
 ```
 
-V `langlinks` tabuľke sa hľadajú odkazy na preklady slovenských článkov tak, že z nej vyberieme hodnoty `ll_title`, ak sa `ll_lang` rovná `cs` alebo `hu`. Hodnota `ll_from` je ID slovenského článku. Podľa `ll_title` potom vyberáme z českej alebo maďarskej tabuľky `page` korešpondujúce ID českého alebo maďarského článku.
+V *langlinks* tabuľke sa hľadajú odkazy na preklady slovenských článkov tak, že z nej vyberieme hodnoty `ll_title`, ak sa `ll_lang` rovná `cs` alebo `hu`. Hodnota `ll_from` je ID slovenského článku. Podľa `ll_title` potom vyberáme z českej alebo maďarskej tabuľky *page* korešpondujúce ID českého alebo maďarského článku.
 
 Na nájdenie `sk - cs` alebo `sk - hu` párov ID slúži v aplikácii WikiTranslator príkaz `2`. Následne sa pomocou distribuovaného spracovania so Spark dá spustením programu príkazom `3` vytvoriť prienik `sk - cs - hu`.
 
@@ -138,7 +138,7 @@ Nástroj sa spúšťa pre každý jazyk zvlášť:
 - Pre `cs` jazyk v priečinku `dataset/cs-articles`, kde sa musí nachádzať dump `cswiki-latest-pages-articles.xml.bz2`.
 - Pre `hu` jazyk v priečinku `dataset/hu-articles`, kde sa musí nachádzať dump `huwiki-latest-pages-articles.xml.bz2`.
 
-Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Na to slúži príkaz `4`, ktorým sa dajú vytvoriť `sk`, `cs` a `hu` dokumenty. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomocou Apache Lucene budú indexovať.
+Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Zo spracovaných XML dumpov sa teda podľa zoznamu trojíc ID `sk - cs - hu` vyberú potrebné články, z ktorých sa vytvoria `sk`, `cs` a `hu` dokumenty. Na to slúži príkaz `4`. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomocou Apache Lucene budú indexovať.
 
 ### Indexovanie
 
@@ -241,7 +241,7 @@ Celý výsledok je v súbore [output.json](output.json).
 
 ## Verzia 1
 
-V tabuľke *langlinks* budeme vyhľadávať preklady článkov podľa kódov jazykov pomocou stĺpca `ll_lang`. Názvy článkov v slovenčine nájdeme pomocou hodnoty zo stĺpca `ll_from`, a to tak, že v tabuľke *page* pre slovenské články nájdeme `page_title` slovenských názvov podľa hodnôt `page_id`, ktoré zodpovedajú hodnotám `ll_from` v tabuľke *langlinks*. Takto sa budú vyhľadávať názvy rovnakých článkov v 3 rôznych jazykoch - zoberú sa ich názvy a prvé odseky. Prekladač bude vytvorený vo forme vyhľadávača, ktorý bude vracať výsledky na základe zadanej požiadavky. Napr. sa zadá slovo a jazyk, v ktorom sa má dané slovo vyhľadať, a potom sa vrátia všetky dokumenty (názvy článkov) aj s prekladmi do ostatných 2 jazykov, ktoré obsahujú dané slovo.
+V tabuľke *langlinks* budeme vyhľadávať preklady článkov podľa kódov jazykov pomocou stĺpca `ll_lang`. Názvy článkov v slovenčine nájdeme pomocou hodnoty zo stĺpca `ll_from`, a to tak, že v tabuľke *page* pre slovenské články nájdeme `page_title` slovenských názvov podľa hodnôt `page_id`, ktoré zodpovedajú hodnotám `ll_from` v tabuľke *langlinks*. Hodnoty `ll_title` sa budú ukladať ako preklady slovenských názvov. Prekladač bude vytvorený vo forme vyhľadávača, ktorý bude vracať výsledky na základe zadanej požiadavky. Napr. sa zadá slovo a jazyk, v ktorom sa má dané slovo vyhľadať, a potom sa vrátia všetky dokumenty (názvy článkov) aj s prekladmi do ostatných 2 jazykov, ktoré obsahujú dané slovo.
 
 ### Formát dokumentov
 
