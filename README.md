@@ -80,7 +80,7 @@ Nasledovne je možné spustiť WikiTranslator.
 
 Zoznam príkazov v aplikácii WikiTranslator je (spúšťajú sa ich poradovým číslom):
 
-```cmd
+```txt
 1. exit
 2. find article ID pairs
 3. create sk-cs-hu ID conjunction with Spark
