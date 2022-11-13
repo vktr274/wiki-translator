@@ -27,8 +27,8 @@ public class Main
 
         System.out.println("1. exit");
         System.out.println("2. find article ID pairs");
-        System.out.println("3. create sk-cs-hu ID conjunction");
-        System.out.println("4. create docs");
+        System.out.println("3. create sk-cs-hu ID conjunction with Spark");
+        System.out.println("4. create docs with Spark");
         System.out.println("5. create ID mapping");
         System.out.println("6. create Lucene index");
         System.out.println("7. use translation search");
@@ -63,19 +63,21 @@ public class Main
                 break;
             case 3:
                 try {
-                    TranslationFinder.conjuction();
+                    TranslationFinder.conjunctionSpark();
                     System.out.println("Success");
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("Error");
                 }
                 break;
             case 4:
                 try {
                     var documentCleaner = new DocumentParser();
-                    documentCleaner.createDocs();
+                    documentCleaner.createDocsSpark();
                     documentCleaner.close();
                     System.out.println("Success");
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("Error");
                 }
                 break;
@@ -83,11 +85,11 @@ public class Main
                 try {
                     var mapper = new TranslationMapper();
                     mapper.mapLanguages();
-                    mapper.close();
                     System.out.println("Success");
                 } catch (Exception e) {
                     System.out.println("Error");
                 }
+                break;
             case 6:
                 try {
                     var luceneIndexer = new LuceneManager();
@@ -96,8 +98,10 @@ public class Main
                     ));
                     System.out.println("Success");
                 } catch (Exception e) {
+                    e.printStackTrace();
                     System.out.println("Error");
                 }
+                break;
             case 7:
                 try {
                     var luceneManager = new LuceneManager();
@@ -106,6 +110,7 @@ public class Main
                 } catch (Exception e) {
                     System.out.println("Error");
                 }
+                break;
             default:
                 break;
         }

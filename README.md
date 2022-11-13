@@ -70,7 +70,11 @@ Dependencies pre Spark **musia** byť nastavené nasledovne, keďže použitá v
 
 K Java argumentom treba pridať `--add-exports java.base/sun.nio.ch=ALL-UNNAMED`.
 
-Master node sa spúšťa pomocou `spark-class org.apache.spark.deploy.master.Master --host localhost`. Nasledovne je možné spustiť WikiTranslator.
+Master node sa spúšťa pomocou `spark-class org.apache.spark.deploy.master.Master --host localhost`.
+
+Worker node sa spúšťa pomocou `spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077`.
+
+Nasledovne je možné spustiť WikiTranslator.
 
 ## Verzia 1
 

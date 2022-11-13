@@ -2,15 +2,18 @@ package sk.vinf.wikitranslator;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
+import java.util.concurrent.TimeoutException;
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.spark.SparkConf;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.apache.spark.sql.types.StructType;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -87,62 +90,35 @@ public class TranslationFinder {
         ps.close();
     }
 
-    public static void conjuction() throws IOException {
-        var skCsCsv = Path.of("sk-cs.csv");
-        var skHuCsv = Path.of("sk-hu.csv");
+    public static void conjunctionSpark() throws StreamingQueryException, TimeoutException, IOException {
+        var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
+        SparkSession sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();
+        sparkSession.sparkContext().setLogLevel("ERROR");
 
-        var printer = new CSVPrinter(new FileWriter("sk-cs-hu.csv"), CSVFormat.DEFAULT);
-        printer.printRecord("sk_id", "cs_id", "hu_id");
+        StructType csvSchemaSkCs = new StructType()
+            .add("sk_id", "string")
+            .add("cs_id", "string");
 
-        var skCsParser = CSVParser.parse(
-            skCsCsv,
-            Charset.forName("UTF-8"),
-            CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build()
-        );
-        var skHuParser = CSVParser.parse(
-            skHuCsv,
-            Charset.forName("UTF-8"),
-            CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build()
-        );
+        StructType csvSchemaSkHu = new StructType()
+            .add("sk_id", "string")
+            .add("hu_id", "string");
 
-        var skCsRecords = skCsParser.getRecords();
-        var skHuRecords = skHuParser.getRecords();
-        skCsParser.close();
-        skHuParser.close();
+        Dataset<Row> csvSkCs = sparkSession
+            .read()
+            .option("header", "true") 
+            .schema(csvSchemaSkCs)
+            .csv("sk-cs.csv");
 
-        if (skCsRecords.size() < skHuRecords.size()) {
-            for (var recordSkCs : skCsRecords) {
-                for (var recordSkHu : skHuRecords) {
-                    var skId = recordSkCs.get("sk_id");
-                    if (skId.equals(recordSkHu.get("sk_id"))) {
-                        var csId = recordSkCs.get("cs_id");
-                        var huId = recordSkHu.get("hu_id");
-                        printer.printRecord(
-                            skId,
-                            csId,
-                            huId
-                        );
-                        System.out.println(skId + "-" + csId + "-" + huId);
-                    }
-                }
-            }
-        } else {
-            for (var recordSkHu : skHuRecords) {
-                for (var recordSkCs : skCsRecords) {
-                    var skId = recordSkCs.get("sk_id");
-                    if (skId.equals(recordSkHu.get("sk_id"))) {
-                        var csId = recordSkCs.get("cs_id");
-                        var huId = recordSkHu.get("hu_id");
-                        printer.printRecord(
-                            skId,
-                            csId,
-                            huId
-                        );
-                        System.out.println(skId + "-" + csId + "-" + huId);
-                    }
-                }
-            }
-        }
-        printer.close();
+        Dataset<Row> csvSkHu = sparkSession
+            .read()
+            .option("header", "true") 
+            .schema(csvSchemaSkHu)
+            .csv("sk-hu.csv");
+        
+        Dataset<Row> joined = csvSkCs.join(
+            csvSkHu,
+            csvSkCs.col("sk_id").equalTo(csvSkHu.col("sk_id"))
+        ).select(csvSkCs.col("sk_id"), csvSkCs.col("cs_id"), csvSkHu.col("hu_id"));
+        joined.write().option("header", "true").csv("sk-cs-hu-spark");
     }
 }

@@ -5,3 +5,4 @@ dataset/*/output
 *.xml
 documents-*.csv
 index
+documents-*-spark
