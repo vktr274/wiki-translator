@@ -51,11 +51,7 @@ public class Main
                 break;
             case 2:
                 try {
-                    var translationFinder = new TranslationFinder(
-                        getLang(List.of("cs", "hu"))
-                    );
-                    translationFinder.find();
-                    translationFinder.close();
+                    TranslationFinder.find(getLang(List.of("cs", "hu")));
                     System.out.println("Success");
                 } catch (Exception e) {
                     System.out.println("Error");
@@ -72,9 +68,7 @@ public class Main
                 break;
             case 4:
                 try {
-                    var documentCleaner = new DocumentParser();
-                    documentCleaner.createDocsSpark();
-                    documentCleaner.close();
+                    DocumentParser.createDocsSpark();
                     System.out.println("Success");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -83,8 +77,7 @@ public class Main
                 break;
             case 5:
                 try {
-                    var mapper = new TranslationMapper();
-                    mapper.mapLanguages();
+                    TranslationMapper.mapLanguages();
                     System.out.println("Success");
                 } catch (Exception e) {
                     System.out.println("Error");
@@ -92,8 +85,7 @@ public class Main
                 break;
             case 6:
                 try {
-                    var luceneIndexer = new LuceneManager();
-                    luceneIndexer.indexLanguage(getLang(
+                    LuceneManager.indexLanguage(getLang(
                         List.of("sk", "cs", "hu")
                     ));
                     System.out.println("Success");
@@ -104,8 +96,7 @@ public class Main
                 break;
             case 7:
                 try {
-                    var luceneManager = new LuceneManager();
-                    luceneManager.start();
+                    LuceneManager.start();
                     System.out.println("Success");
                 } catch (Exception e) {
                     System.out.println("Error");

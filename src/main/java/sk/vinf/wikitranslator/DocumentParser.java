@@ -1,6 +1,5 @@
 package sk.vinf.wikitranslator;
 
-import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.spark.SparkConf;
@@ -11,19 +10,11 @@ import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.StructType;
 
 public class DocumentParser {
-    private final SparkSession sparkSession;
-    
-    DocumentParser() throws IOException {
+    public static void createDocsSpark() throws StreamingQueryException, TimeoutException {
         var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
-        sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();
+        var sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();
         sparkSession.sparkContext().setLogLevel("ERROR");
-    }
 
-    public void close() throws IOException {
-        sparkSession.close();
-    }
-
-    public void createDocsSpark() throws StreamingQueryException, TimeoutException {
         StructType jsonSchema = new StructType()
             .add("id", "string")
             .add("revid", "string")
@@ -111,5 +102,7 @@ public class DocumentParser {
         jsonSk.write().json("documents-sk-spark");
         jsonCs.write().json("documents-cs-spark");
         jsonHu.write().json("documents-hu-spark");
+
+        sparkSession.close();
     }
 }

@@ -38,7 +38,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class LuceneManager {
-    private Stream<HashMap<String, String>> getStream(String uri) throws IOException {
+    private static Stream<HashMap<String, String>> getStream(String uri) throws IOException {
         var type = new TypeToken<HashMap<String, String>>(){}.getType();
         var gson = new Gson();
         return Files
@@ -63,7 +63,7 @@ public class LuceneManager {
             .parallel();
     }
 
-    private HashMap<String, List<String>> getIdMapping(String lang) throws IOException {
+    private static HashMap<String, List<String>> getIdMapping(String lang) throws IOException {
         var gson = new Gson();
         var type = new TypeToken<HashMap<String, List<String>>>(){}.getType();
         var reader = Files.newBufferedReader(Path.of(lang + "-map.json"));
@@ -71,7 +71,7 @@ public class LuceneManager {
         return gson.fromJson(reader, type);
     }
 
-    private boolean checkInput(String input) {
+    private static boolean checkInput(String input) {
         var parts = input.split(":");
         if (
             parts.length < 3 ||
@@ -83,7 +83,7 @@ public class LuceneManager {
         return true;
     }
 
-    public void start() throws IOException, IllegalArgumentException, NullPointerException, ParseException {
+    public static void start() throws IOException, IllegalArgumentException, NullPointerException, ParseException {
         var scanner = new Scanner(System.in, "Cp852");
         var gson = new Gson();
 
@@ -105,7 +105,7 @@ public class LuceneManager {
         scanner.close();
     }
 
-    public ArrayList<HashMap<String, HashMap<String, String>>> search(String inputQuery) throws IllegalArgumentException, IOException, ParseException, NullPointerException {
+    private static ArrayList<HashMap<String, HashMap<String, String>>> search(String inputQuery) throws IllegalArgumentException, IOException, ParseException, NullPointerException {
         if (!checkInput(inputQuery)) {
             throw new IllegalArgumentException("Query should have a lang:at:qtext syntax");
         }
@@ -230,7 +230,7 @@ public class LuceneManager {
         return searchResult;
     }
 
-    public void indexLanguage(String lang) throws IOException, NullPointerException {
+    public static void indexLanguage(String lang) throws IOException, NullPointerException {
         var directory = FSDirectory.open(Path.of("index", lang));
 
         Analyzer analyzer = null;

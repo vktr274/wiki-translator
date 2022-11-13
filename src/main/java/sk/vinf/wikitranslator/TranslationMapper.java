@@ -17,13 +17,7 @@ import org.apache.commons.csv.CSVRecord;
 import com.google.gson.Gson;
 
 public class TranslationMapper {
-    private final Gson gson;
-
-    TranslationMapper() {
-        gson = new Gson();
-    }
-
-    private Stream<CSVRecord> getStream(String uri) throws IOException {
+    private static Stream<CSVRecord> getStream(String uri) throws IOException {
         return Files
             .walk(Paths.get(uri))
             .filter(Files::isRegularFile)
@@ -46,7 +40,9 @@ public class TranslationMapper {
             .parallel();
     }
 
-    public void mapLanguages() throws IOException {
+    public static void mapLanguages() throws IOException {
+        var gson = new Gson();
+
         var fwSk = new FileWriter(new File("sk-map.json"));
         var fwCs = new FileWriter(new File("cs-map.json"));
         var fwHu = new FileWriter(new File("hu-map.json"));

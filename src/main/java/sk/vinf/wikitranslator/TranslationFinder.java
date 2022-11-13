@@ -2,7 +2,6 @@ package sk.vinf.wikitranslator;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
@@ -18,35 +17,22 @@ import org.apache.spark.sql.types.StructType;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class TranslationFinder {
-    private final Dotenv dotenv;
-    private final String lang;
-    private final Connection connSk;
-    private final Connection connLang;
-
-    TranslationFinder(String lang) throws SQLException {
-        dotenv = Dotenv.load();
-        this.lang = lang;
+    public void find(String lang) throws SQLException, IOException {
+        var dotenv = Dotenv.load();
+        
         var user = dotenv.get("USER");
         var pw = dotenv.get("PW");
 
-        connSk = DriverManager.getConnection(
+        var connSk = DriverManager.getConnection(
             "jdbc:mysql://localhost/wiki_sk" +
             "?user=" + user +
             "&password=" + pw
         );
-        connLang = DriverManager.getConnection(
+        var connLang = DriverManager.getConnection(
             "jdbc:mysql://localhost/wiki_" + lang + 
             "?user=" + user + 
             "&password=" + pw
         );
-    }
-
-    public void close() throws SQLException {
-        connSk.close();
-        connLang.close();
-    }
-
-    public void find() throws SQLException, IOException {
         if (connLang == null || connSk == null) {
             return;
         }
@@ -90,7 +76,7 @@ public class TranslationFinder {
         ps.close();
     }
 
-    public static void conjunctionSpark() throws StreamingQueryException, TimeoutException, IOException {
+    public void conjunctionSpark() throws StreamingQueryException, TimeoutException, IOException {
         var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
         SparkSession sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();
         sparkSession.sparkContext().setLogLevel("ERROR");
