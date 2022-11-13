@@ -14,7 +14,7 @@ Projekt bude riešený v jazyku **Java 17** s build nástrojom **Maven**.
 **Apache Lucene** bude využitý na indexovanie v druhej fáze projektu.
 **Apache Spark** bude využitý na distribuované spracovanie v druhej fáze projektu.
 
-## Dáta
+## Dataset
 
 [Slovenská Wikipedia](https://dumps.wikimedia.org/skwiki/latest/)\
 [Česká Wikipedia](https://dumps.wikimedia.org/cswiki/latest/)\
@@ -32,13 +32,15 @@ Medzijazyčné odkazy sú uchovávané v relačnej databáze v tabuľke *langlin
 
 ## Verzia 2
 
-**TODO** použitím Apache Spark a Lucene.
+V druhej verzii je index vytvorený použitím Apache Lucene. Dáta, ktoré sa indexovali boli distribuovane predspracované pomocou Apache Spark.
 
-Použité verzie:
+Použitie správnych verzií Apache Spark je dôležité pre správne fungovanie distribuovaného spracovania. Boli použité verzie:
 
 [Apache Spark 3.3.1 pre-built for Hadoop](https://www.apache.org/dyn/closer.lua/spark/spark-3.3.1/spark-3.3.1-bin-hadoop3.tgz)
 
-[Hadoop 3.3.1 Windows Bin](https://github.com/kontext-tech/winutils/tree/master/hadoop-3.3.1/bin)
+[Apache Hadoop 3.3.1 Windows Bin](https://github.com/kontext-tech/winutils/tree/master/hadoop-3.3.1/bin)
+
+Po stiahnutí binárnych súborov Apache Spark a Apache Hadoop je potrebné nastaviť premenné prostredia nasledovne:
 
 ```env
 SPARK_HOME=absolute\path\to\spark-3.3.1-bin-hadoop3
@@ -52,7 +54,7 @@ K premennej `PATH` treba potom pridať:
 %HADOOP_HOME%\bin
 ```
 
-Dependencies pre Spark **musia** byť nastavené nasledovne, keďže použitá verzia Spark používa Scala 2.12
+Dependencies pre Spark **musia** byť nastavené nasledovne, keďže použitá verzia Spark používa Scala 2.12:
 
 ```xml
 <dependency>
@@ -75,6 +77,105 @@ Master node sa spúšťa pomocou `spark-class org.apache.spark.deploy.master.Mas
 Worker node sa spúšťa pomocou `spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077`.
 
 Nasledovne je možné spustiť WikiTranslator.
+
+Zoznam príkazov v aplikácii WikiTranslator je (spúšťajú sa ich poradovým číslom):
+
+```cmd
+1. exit
+2. find article ID pairs
+3. create sk-cs-hu ID conjunction with Spark
+4. create docs with Spark
+5. create ID mapping
+6. create Lucene index
+7. use translation search (use 'exit' for quitting)
+```
+
+### Dáta
+
+Zo súborov `skwiki-latest-langlinks.sql.gz`, `cswiki-latest-page.sql.gz` a `huwiki-latest-page.sql.gz` boli SQL súbory importované do lokálnej PostgreSQL databázy, ku ktorej sa aplikácia WikiTranslator pripája použitím prihlasovacích údajov v `.env` súbore v koreňovom adresári projektu. Súbor `.env` musí obsahovať polia:
+
+```env
+USER=database_owner
+PW=password
+```
+
+V `langlinks` tabuľke sa hľadajú odkazy na preklady slovenských článkov tak, že z nej vyberieme hodnoty `ll_title`, ak sa `ll_lang` rovná `cs` alebo `hu`. Hodnota `ll_from` je ID slovenského článku. Podľa `ll_title` potom vyberáme z českej alebo maďarskej tabuľky `page` korešpondujúce ID českého alebo maďarského článku.
+
+Na nájdenie `sk - cs` alebo `sk - hu` párov ID slúži v aplikácii WikiTranslator príkaz `2`. Následne sa pomocou distribuovaného spracovania so Spark dá spustením programu príkazom `3` vytvoriť prienik `sk - cs - hu`.
+
+Ďalším krokom je spracovanie Wikipedia dumpov pomocou nástroja [WikiExtractor](https://github.com/attardi/wikiextractor), ktorý vyčistí XML dump súbory od WikiText syntaxe a zachová články v JSON Lines súboroch so schémou:
+
+```json
+{
+    "id": "id_value",
+    "revid": "revid_value",
+    "url": "url_value",
+    "title": "title_value",
+    "text": "text_value"
+}
+```
+
+Nástroj treba spustiť v Docker kontajneri pomocou príkazov:
+
+Build: `docker build --pull --rm -t wikiextractor:latest .`
+
+Run: `docker run --rm -it --mount type=bind,source=%cd%\output,target=/wiki/output wikiextractor:latest`
+
+Nástroj sa spúšťa pre každý jazyk zvlášť:
+
+- Pre `sk` jazyk v priečinku `dataset/sk-articles`, kde sa musí nachádzať dump `skwiki-latest-pages-articles.xml.bz2`.
+- Pre `cs` jazyk v priečinku `dataset/cs-articles`, kde sa musí nachádzať dump `cswiki-latest-pages-articles.xml.bz2`.
+- Pre `hu` jazyk v priečinku `dataset/hu-articles`, kde sa musí nachádzať dump `huwiki-latest-pages-articles.xml.bz2`.
+
+Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Na to slúži príkaz `4`, ktorým sa dajú vytvoriť `sk`, `cs` a `hu` dokumenty. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomoou Apache Lucene budú indexovať.
+
+### Indexovanie
+
+Na vytvorenie indexov slúži príkaz `6`. Aplikácia dáva na výber vytvorenie indexov pre `sk`, `cs` a `hu` dokumenty zvlášť. Polia `title` a `text` sa indexujú na vyhľadávanie používateľom zadaného textu. Pole `id` sa indexuje iba na to, aby sme vedeli rýchlo vyhľadať preklady k daným dokumentom.
+
+### Vyhľadávanie
+
+Pred prvým vyhľadávaním treba spustiť príkaz `5`, ktorý vytvorí 3 JSON súbory, a to `sk-map.json`, `cs-map.json` a `hu-map.json`. Tieto súbory slúžia na rýchle zistenie ID prekladov článkov pri vyhľadávaní. Schéma JSON súborov je:
+
+```json
+{
+    "searched_lang_id": [ "translation_1_id", "translation_2_id" ],
+}
+```
+
+Syntax vyhľadávača je `lang:at:qtext`, kde:
+
+- `lang` je jazyk, v dokumentoch ktorého chceme vyhľadávať. Može to byť `sk`, `cs` alebo `hu`,
+- `at` je pole, v ktorom chceme vyhľadávať. Môže to byť rôzna kombinácia názvov (pole `title` = `T`) a textov (pole `text` = `t`) článkov. Môže to byť `T`, `t`, `T&t`, `t&T`, `T|t` alebo `t|T`. `T`, kde znak `&` znamená 'a zároveň' a znak `|` znamená 'alebo'.
+- `qtext` je text, ktorý sa má vyhľadávať v danom jazyku.
+
+Vyhľadávanie vráti zjednodušený výsledok v konzole (výpisy neobsahujú pole `text`) a kompletný výsledok v súbore `output.json` v koreňovom adresári projektu. Vo výstupe sa nachádza top 10 vyhovujúcich výsledkov.
+
+Schéma výsledného JSON súboru je:
+
+```json
+{
+    "searchResult": [
+        {
+            "lang1": {
+                "id": "id_value",
+                "title": "title_value",
+                "text": "text_value"
+            },
+            "lang2": {
+                "id": "id_value",
+                "title": "title_value",
+                "text": "text_value"
+            },
+            "lang3": {
+                "id": "id_value",
+                "title": "title_value",
+                "text": "text_value"
+            }
+        },
+    ]
+}
+```
 
 ## Verzia 1
 
