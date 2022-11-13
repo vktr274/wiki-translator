@@ -31,7 +31,7 @@ public class Main
         System.out.println("4. create docs with Spark");
         System.out.println("5. create ID mapping");
         System.out.println("6. create Lucene index");
-        System.out.println("7. use translation search");
+        System.out.println("7. use translation search (use 'exit' for quitting)");
         
         while (true) {
             try {

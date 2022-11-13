@@ -17,7 +17,7 @@ import org.apache.spark.sql.types.StructType;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class TranslationFinder {
-    public void find(String lang) throws SQLException, IOException {
+    public static void find(String lang) throws SQLException, IOException {
         var dotenv = Dotenv.load();
         
         var user = dotenv.get("USER");
@@ -59,13 +59,13 @@ public class TranslationFinder {
             }
             var psLang = connLang.prepareStatement("SELECT page_id FROM wiki_" + lang + ".page WHERE page_title = ?");
             psLang.setString(1, title);
-            var resID = psLang.executeQuery();
-            if (!resID.next()) {
+            var langRes = psLang.executeQuery();
+            if (!langRes.next()) {
                 System.out.println("No page_id");
                 continue;
             }
             var from = res.getInt("ll_from");
-            var to = resID.getInt("page_id");
+            var to = langRes.getInt("page_id");
             psLang.close();
             System.out.println(from + " - " + to);
             printer.printRecord(from, to);
@@ -76,7 +76,7 @@ public class TranslationFinder {
         ps.close();
     }
 
-    public void conjunctionSpark() throws StreamingQueryException, TimeoutException, IOException {
+    public static void conjunctionSpark() throws StreamingQueryException, TimeoutException, IOException {
         var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
         SparkSession sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();
         sparkSession.sparkContext().setLogLevel("ERROR");

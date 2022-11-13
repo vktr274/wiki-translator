@@ -160,7 +160,7 @@ public class LuceneManager {
         }
 
         boolQuery = boolQueryBuilder.build();
-        var topDocs = isearcher.search(boolQuery, 5);
+        var topDocs = isearcher.search(boolQuery, 10);
         var idMapping = getIdMapping(lang);
 
         var lang2 = "";
