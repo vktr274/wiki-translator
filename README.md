@@ -7,12 +7,23 @@ Téma môjho projektu je **Vytvorenie multilingvistického slovníka z wikipédi
 
 Projekt bude riešený v jazyku **Java 17** s build nástrojom **Maven**.
 
-## Rámce
+## Rámce a knižnice
+
+### Vo verzii 2
+
+**Apache Commons** na spracúvanie CSV súborov.\
+**Apache Lucene** na indexovanie.\
+**Apache Spark** na distribuované spracovanie.\
+**Gson** na spracúvanie JSON súborov.\
+**Dotenv-Java** na otváranie `.env` súboru.\
+**MySQL Connector Java** na pripojenie k MySQL databáze.
+
+## Vo verzii 1
 
 **Apache Commons** na spracúvanie CSV súborov a reťazcov.\
-**Gson** na spracúvanie JSON súborov pre vlastný index.\
-**Apache Lucene** bude využitý na indexovanie v druhej fáze projektu.
-**Apache Spark** bude využitý na distribuované spracovanie v druhej fáze projektu.
+**Gson** na spracúvanie JSON súborov pre vlastný index.
+**Dotenv-Java** na otváranie `.env` súboru.\
+**MySQL Connector Java** na pripojenie k MySQL databáze.
 
 ## Dataset
 
@@ -92,7 +103,7 @@ Zoznam príkazov v aplikácii WikiTranslator je (spúšťajú sa ich poradovým 
 
 ### Dáta
 
-Zo súborov `skwiki-latest-langlinks.sql.gz`, `cswiki-latest-page.sql.gz` a `huwiki-latest-page.sql.gz` boli SQL súbory importované do lokálnej PostgreSQL databázy, ku ktorej sa aplikácia WikiTranslator pripája použitím prihlasovacích údajov v `.env` súbore v koreňovom adresári projektu. Súbor `.env` musí obsahovať polia:
+Zo súborov `skwiki-latest-langlinks.sql.gz`, `cswiki-latest-page.sql.gz` a `huwiki-latest-page.sql.gz` boli SQL súbory importované do lokálnej MySQL databázy, ku ktorej sa aplikácia WikiTranslator pripája použitím prihlasovacích údajov v `.env` súbore v koreňovom adresári projektu. Súbor `.env` musí obsahovať polia:
 
 ```env
 USER=database_owner
