@@ -241,6 +241,8 @@ Celý výsledok je v súbore [output.json](output.json).
 
 ## Verzia 1
 
+**Kód pre prvú verziu s vlastným indexom, vlastným vyhľadávaním a bez distribuovaného spracovania je označený tagom 1.0.**
+
 V tabuľke *langlinks* budeme vyhľadávať preklady článkov podľa kódov jazykov pomocou stĺpca `ll_lang`. Názvy článkov v slovenčine nájdeme pomocou hodnoty zo stĺpca `ll_from`, a to tak, že v tabuľke *page* pre slovenské články nájdeme `page_title` slovenských názvov podľa hodnôt `page_id`, ktoré zodpovedajú hodnotám `ll_from` v tabuľke *langlinks*. Hodnoty `ll_title` sa budú ukladať ako preklady slovenských názvov. Prekladač bude vytvorený vo forme vyhľadávača, ktorý bude vracať výsledky na základe zadanej požiadavky. Napr. sa zadá slovo a jazyk, v ktorom sa má dané slovo vyhľadať, a potom sa vrátia všetky dokumenty (názvy článkov) aj s prekladmi do ostatných 2 jazykov, ktoré obsahujú dané slovo.
 
 ### Formát dokumentov
