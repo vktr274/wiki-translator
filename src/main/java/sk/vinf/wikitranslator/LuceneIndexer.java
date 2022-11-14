@@ -76,7 +76,7 @@ public class LuceneIndexer {
         Stream<HashMap<String, String>> stream = null;
 
         if (lang.equals("sk")) {
-            // There is no Slovak analyzer, using CzechAnalyzer instead
+            // There is no SlovakAnalyzer, using CzechAnalyzer instead
             analyzer = new CzechAnalyzer();
             stream = getStream("documents-sk-spark");
         } else if (lang.equals("cs")) {
