@@ -158,7 +158,7 @@ Syntax vyhľadávača je `lang:at:qtext`, kde:
 
 - `lang` je jazyk, v dokumentoch ktorého chceme vyhľadávať. Može to byť `sk`, `cs` alebo `hu`,
 - `at` je pole, v ktorom chceme vyhľadávať. Môže to byť rôzna kombinácia názvov (pole `title` = `T`) a textov (pole `text` = `t`) článkov. Môže to byť `T`, `t`, `T&t`, `t&T`, `T|t` alebo `t|T`. `T`, kde znak `&` znamená 'a zároveň' a znak `|` znamená 'alebo'.
-- `qtext` je text, ktorý sa má vyhľadávať v danom jazyku.
+- `qtext` je text, ktorý sa má vyhľadávať v danom jazyku - použité analyzéry textu z Apache Lucene pri indexovaní neodstraňujú diakritiku (`CzechAnalyzer` pre slovenčinu a češtinu a `HungarianAnalyzer` pre maďarčinu), preto funguje vyhľadávanie s diakritikou.
 
 Vyhľadávanie vráti zjednodušený výsledok v konzole (výpisy neobsahujú pole `text`) a kompletný výsledok v súbore `output.json` v koreňovom adresári projektu. Vo výstupe sa nachádza top 10 vyhovujúcich výsledkov.
 
