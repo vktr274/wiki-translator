@@ -140,6 +140,8 @@ Nástroj sa spúšťa pre každý jazyk zvlášť:
 
 Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Zo spracovaných XML dumpov sa teda podľa zoznamu trojíc ID `sk - cs - hu` vyberú potrebné články, z ktorých sa vytvoria `sk`, `cs` a `hu` dokumenty. Na to slúži príkaz `4`. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomocou Apache Lucene budú indexovať.
 
+Spracované dáta pripravené na indexovanie sú dostupné na [Google Drive](https://drive.google.com/drive/folders/1lz1lO7snfa_qwWuC2Gp_dIMLVKUsBXoq?usp=share_link). Priečinky `documents-sk-spark`, `documents-cs-spark` a `documents-hu-spark` musia byť v koreňovom adresári projektu. V každom z nich je 63926 dokumentov.
+
 ### Indexovanie
 
 Na vytvorenie indexov slúži príkaz `6`. Aplikácia dáva na výber vytvorenie indexov pre `sk`, `cs` a `hu` dokumenty zvlášť. Polia `title` a `text` sa indexujú na vyhľadávanie používateľom zadaného textu. Pole `id` sa indexuje iba na to, aby sme vedeli rýchlo vyhľadať preklady k daným dokumentom.
