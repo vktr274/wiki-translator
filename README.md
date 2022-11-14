@@ -112,7 +112,7 @@ PW=password
 
 V *langlinks* tabuľke sa hľadajú odkazy na preklady slovenských článkov tak, že z nej vyberieme hodnoty `ll_title`, ak sa `ll_lang` rovná `cs` alebo `hu`. Hodnota `ll_from` je ID slovenského článku. Podľa `ll_title` potom vyberáme z českej alebo maďarskej tabuľky *page* korešpondujúce ID českého alebo maďarského článku.
 
-Na nájdenie `sk - cs` alebo `sk - hu` párov ID slúži v aplikácii WikiTranslator príkaz `2`. Následne sa pomocou distribuovaného spracovania so Spark dá spustením programu príkazom `3` vytvoriť prienik `sk - cs - hu`.
+Na nájdenie `sk - cs` alebo `sk - hu` párov ID slúži v aplikácii WikiTranslator príkaz `2`. Následne sa pomocou distribuovaného spracovania so Spark dá spustením programu príkazom `3` vytvoriť prienik `sk - cs - hu`. Súbory `sk-cs.csv` a `sk-hu.csv` pre páry ID a aj Sparkom vygenerovaný prienik (adresár `sk-cs-hu-spark`) sú už vygenerované v repozitári projektu, netreba ich generovať znovu.
 
 Ďalším krokom je spracovanie Wikipedia dumpov pomocou nástroja [WikiExtractor](https://github.com/attardi/wikiextractor), ktorý vyčistí XML dump súbory od WikiText syntaxe a zachová články v JSON Lines súboroch so schémou:
 
@@ -144,11 +144,11 @@ Spracované dáta pripravené na indexovanie sú dostupné na [Google Drive](htt
 
 ### Indexovanie
 
-Na vytvorenie indexov slúži príkaz `6`. Aplikácia dáva na výber vytvorenie indexov pre `sk`, `cs` a `hu` dokumenty zvlášť. Polia `title` a `text` sa indexujú na vyhľadávanie používateľom zadaného textu. Pole `id` sa indexuje iba na to, aby sme vedeli rýchlo vyhľadať preklady k daným dokumentom.
+Na vytvorenie indexov slúži príkaz `6`. Aplikácia dáva na výber vytvorenie indexov pre `sk`, `cs` a `hu` dokumenty zvlášť. Polia `title` a `text` sa indexujú na vyhľadávanie používateľom zadaného textu. Pole `id` sa indexuje iba na to, aby sme vedeli rýchlo vyhľadať preklady k daným dokumentom. Index je dostupný na [Google Drive](https://drive.google.com/drive/folders/1lz1lO7snfa_qwWuC2Gp_dIMLVKUsBXoq?usp=share_link). Adresár `index` musí byť v koreňovom adresári projektu.
 
 ### Vyhľadávanie
 
-Pred prvým vyhľadávaním treba spustiť príkaz `5`, ktorý vytvorí 3 JSON súbory, a to `sk-map.json`, `cs-map.json` a `hu-map.json`. Tieto súbory slúžia na rýchle zistenie ID prekladov článkov pri vyhľadávaní. Schéma JSON súborov je:
+Pred prvým vyhľadávaním treba spustiť príkaz `5`, ktorý vytvorí 3 JSON súbory, a to `sk-map.json`, `cs-map.json` a `hu-map.json`. Tieto súbory sú už vygenerované v repozitári projektu, netreba preto príkaz spúšťať. Tieto súbory slúžia na rýchle zistenie ID prekladov článkov pri vyhľadávaní. Schéma JSON súborov je:
 
 ```json
 {
