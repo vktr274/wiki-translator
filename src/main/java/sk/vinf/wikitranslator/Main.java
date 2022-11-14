@@ -85,7 +85,7 @@ public class Main
                 break;
             case 6:
                 try {
-                    LuceneManager.indexLanguage(getLang(
+                    LuceneIndexer.indexLanguage(getLang(
                         List.of("sk", "cs", "hu")
                     ));
                     System.out.println("Success");
@@ -96,7 +96,8 @@ public class Main
                 break;
             case 7:
                 try {
-                    LuceneManager.start();
+                    var luceneSearch = new LuceneSearch();
+                    luceneSearch.start();
                     System.out.println("Success");
                 } catch (Exception e) {
                     System.out.println("Error");

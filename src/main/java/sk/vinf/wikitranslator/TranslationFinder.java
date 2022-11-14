@@ -16,7 +16,19 @@ import org.apache.spark.sql.types.StructType;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
+/**
+ * Class for finding IDs of translations for Wikipedia articles in Slovak, Czech and Hungarian
+ */
 public class TranslationFinder {
+    /**
+     * find initiates connection to a local MySQL database based on a username
+     * USER and password PW in a .env file in the root directory of the project.
+     * Then it finds IDs of Slovak articles and IDs of their corresponding
+     * translations to the language `lang`.
+     * @param lang Language to find translations to from Slovak
+     * @throws SQLException
+     * @throws IOException
+     */
     public static void find(String lang) throws SQLException, IOException {
         var dotenv = Dotenv.load();
         
@@ -76,6 +88,15 @@ public class TranslationFinder {
         ps.close();
     }
 
+    /**
+     * conjunctionSpark initiates a connection to a local Spark cluster which has to have
+     * 1 master node and at least 1 worker node running and then joins the sk-cs.csv and
+     * sk-hu.csv files based on `sk_id`. The resulting files are stored in the sk-cs-hu-spark
+     * directory.
+     * @throws StreamingQueryException
+     * @throws TimeoutException
+     * @throws IOException
+     */
     public static void conjunctionSpark() throws StreamingQueryException, TimeoutException, IOException {
         var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
         SparkSession sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();

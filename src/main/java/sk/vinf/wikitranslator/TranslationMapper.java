@@ -16,10 +16,19 @@ import org.apache.commons.csv.CSVRecord;
 
 import com.google.gson.Gson;
 
+/**
+ * Class for mapping translation IDs
+ */
 public class TranslationMapper {
-    private static Stream<CSVRecord> getStream(String uri) throws IOException {
+    /**
+     * getStream walks the dir directory and returns a stream of CSV records.
+     * @param dir directory of the joined CSV file (sk-cs-hu-spark is used in this project)
+     * @return Stream<CSVRecord> stream of CSVRecords from the directory dir
+     * @throws IOException
+     */
+    private static Stream<CSVRecord> getStream(String dir) throws IOException {
         return Files
-            .walk(Paths.get(uri))
+            .walk(Paths.get(dir))
             .filter(Files::isRegularFile)
             .filter(file -> file.getFileName().toString().endsWith(".csv"))
             .map(file -> {
@@ -40,6 +49,14 @@ public class TranslationMapper {
             .parallel();
     }
 
+    /**
+     * mapLanguages creates a mapping for each article ID in each language
+     * to IDs of their translations. The output are 3 JSON files:
+     * sk-map.json with this schema {"sk_id": [ "cs_id", "hu_id" ], ...}
+     * cs-map.json with this schema {"cs_id": [ "sk_id", "hu_id" ], ...}
+     * hu-map.json with this schema {"hu_id": [ "sk_id", "cs_id" ], ...}
+     * @throws IOException
+     */
     public static void mapLanguages() throws IOException {
         var gson = new Gson();
 

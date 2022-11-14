@@ -6,24 +6,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cz.CzechAnalyzer;
 import org.apache.lucene.analysis.hu.HungarianAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -35,43 +27,33 @@ import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.store.FSDirectory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-public class LuceneManager {
-    private static Stream<HashMap<String, String>> getStream(String uri) throws IOException {
-        var type = new TypeToken<HashMap<String, String>>(){}.getType();
-        var gson = new Gson();
-        return Files
-            .walk(Paths.get(uri))
-            .filter(Files::isRegularFile)
-            .filter(file -> file.getFileName().toString().endsWith(".json"))
-            .map(file -> {
-                List<HashMap<String, String>> json = new ArrayList<>();
-                try {
-                    var reader = Files.newBufferedReader(file);
-                    var line = "";
-                    while ((line = reader.readLine()) != null) {
-                        HashMap<String, String> map = gson.fromJson(line, type);
-                        json.add(map);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return json;
-            })
-            .flatMap(List::stream)
-            .parallel();
-    }
+/**
+ * Class for searching using Apache Lucene.
+ */
+public class LuceneSearch {
+    private final HashMap<String, List<String>> translationMapSk;
+    private final HashMap<String, List<String>> translationMapCs;
+    private final HashMap<String, List<String>> translationMapHu;
 
-    private static HashMap<String, List<String>> getIdMapping(String lang) throws IOException {
+    LuceneSearch() throws JsonIOException, JsonSyntaxException, IOException {
         var gson = new Gson();
         var type = new TypeToken<HashMap<String, List<String>>>(){}.getType();
-        var reader = Files.newBufferedReader(Path.of(lang + "-map.json"));
 
-        return gson.fromJson(reader, type);
+        translationMapSk = gson.fromJson(Files.newBufferedReader(Path.of("sk-map.json")), type);
+        translationMapCs = gson.fromJson(Files.newBufferedReader(Path.of("cs-map.json")), type);
+        translationMapHu = gson.fromJson(Files.newBufferedReader(Path.of("hu-map.json")), type);
     }
 
-    private static boolean checkInput(String input) {
+    /**
+     * checkInput checks the syntax validity of the user input.
+     * @param input user input
+     * @return boolean true if valid else false
+     */
+    private boolean checkInput(String input) {
         var parts = input.split(":");
         if (
             parts.length < 3 ||
@@ -83,7 +65,15 @@ public class LuceneManager {
         return true;
     }
 
-    public static void start() throws IOException, IllegalArgumentException, NullPointerException, ParseException {
+    /**
+     * start starts the translator search loop.
+     * A successful search results in a JSON file output.json.
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws NullPointerException
+     * @throws ParseException
+     */
+    public void start() throws IOException, IllegalArgumentException, NullPointerException, ParseException {
         var scanner = new Scanner(System.in, "Cp852");
         var gson = new Gson();
 
@@ -105,7 +95,20 @@ public class LuceneManager {
         scanner.close();
     }
 
-    private static ArrayList<HashMap<String, HashMap<String, String>>> search(String inputQuery) throws IllegalArgumentException, IOException, ParseException, NullPointerException {
+    /**
+     * search uses the index created by Apache Lucene. It first searches for documents
+     * in the language input by the user. After that it uses translationMapSk or
+     * translationMapCs or translationMapHu to find IDs of translations of the documents
+     * in the input language and finally it searches for these translations by IDs.
+     * Output of this search is the constructed search result.
+     * @param inputQuery
+     * @return ArrayList<HashMap<String, HashMap<String, String>>> constructed serach result
+     * @throws IllegalArgumentException
+     * @throws IOException
+     * @throws ParseException
+     * @throws NullPointerException
+     */
+    private ArrayList<HashMap<String, HashMap<String, String>>> search(String inputQuery) throws IllegalArgumentException, IOException, ParseException, NullPointerException {
         if (!checkInput(inputQuery)) {
             throw new IllegalArgumentException("Query should have a lang:at:qtext syntax");
         }
@@ -161,7 +164,6 @@ public class LuceneManager {
 
         boolQuery = boolQueryBuilder.build();
         var topDocs = isearcher.search(boolQuery, 10);
-        var idMapping = getIdMapping(lang);
 
         var lang2 = "";
         var lang3 = "";
@@ -190,7 +192,15 @@ public class LuceneManager {
             var hitId = hit.get("id");
             var hitText = hit.get("text");
             var hitTitle = hit.get("title");
-            var translationIds = idMapping.get(hitId);
+            
+            List<String> translationIds = new ArrayList<>();
+            if (lang.equals("sk")) {
+                translationIds = translationMapSk.get(hitId);
+            } else if (lang.equals("cs")) {
+                translationIds = translationMapCs.get(hitId);
+            } else if (lang.equals("hu")) {
+                translationIds = translationMapHu.get(hitId);
+            }
             
             HashMap<String, HashMap<String, String>> map = new HashMap<>();
             HashMap<String, String> mapLang = new HashMap<>();
@@ -228,48 +238,5 @@ public class LuceneManager {
 
         analyzer.close();
         return searchResult;
-    }
-
-    public static void indexLanguage(String lang) throws IOException, NullPointerException {
-        var directory = FSDirectory.open(Path.of("index", lang));
-
-        Analyzer analyzer = null;
-        Stream<HashMap<String, String>> stream = null;
-
-        if (lang.equals("sk")) {
-            analyzer = new CzechAnalyzer();
-            stream = getStream("documents-sk-spark");
-        } else if (lang.equals("cs")) {
-            analyzer = new CzechAnalyzer();
-            stream = getStream("documents-cs-spark");
-        } else if (lang.equals("hu")) {
-            analyzer = new HungarianAnalyzer();
-            stream = getStream("documents-hu-spark");
-        } else {
-            throw new NullPointerException("Analyzer|CSVParser is null");
-        }
-
-        var config = new IndexWriterConfig(analyzer);
-        var iwriter = new IndexWriter(directory, config);
-
-        var it = stream.iterator();
-
-        while (it.hasNext()) {
-            var record = it.next();
-            var doc = new Document();
-
-            var id = record.get("id");
-            var title = record.get("title");
-            var text = record.get("text");
-
-            doc.add(new StringField("id", id, Field.Store.YES));
-            doc.add(new TextField("title", title, Field.Store.YES));
-            doc.add(new TextField("text", text, Field.Store.YES));
-
-            iwriter.addDocument(doc);
-        }
-        iwriter.close();
-        stream.close();
-        analyzer.close();
     }
 }

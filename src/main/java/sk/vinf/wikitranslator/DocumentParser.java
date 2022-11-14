@@ -9,7 +9,20 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.StructType;
 
+/**
+ * Class for article parsing from JSON files that were created by the WikiExtractor tool.
+ */
 public class DocumentParser {
+    /**
+     * createDocsSpark initiates a connection to a local Apache Spark cluster which has to have
+     * 1 master node and at least 1 worker node running. Then it defines Datasets
+     * of Slovak, Czech and Hungarian JSONs of articles and a Dataset of the CSV file in
+     * sk-cs-hu-spark. Executing the method results in 3 document directories:
+     * documents-sk-spark, documents-cs-spark and documents-hu-spark. Each directory
+     * contains several JSON files of created documents with 3 fields: id, title and text.
+     * @throws StreamingQueryException
+     * @throws TimeoutException
+     */
     public static void createDocsSpark() throws StreamingQueryException, TimeoutException {
         var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
         var sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();
@@ -51,6 +64,13 @@ public class DocumentParser {
             .schema(csvSchema)
             .csv("sk-cs-hu-spark");
 
+        /* 
+         * The next 3 left anti joins are done because the Wikipedia dump does
+         * not contain some articles in each language with IDs in the CSV file
+         * in sk-cs-hu-spark directory. Each left anti join finds these articles
+         * and excludes then from the loaded Dataset of the mentioned CSV file. 
+         * 
+        */
         var toRemoveSk = langIds.join(
             jsonSk,
             jsonSk.col("id").equalTo(langIds.col("sk_id")),
@@ -72,6 +92,10 @@ public class DocumentParser {
         );
         langIds = langIds.except(toRemoveHu);
 
+        /*
+         * The next 3 joins are done to extract only articles that have their
+         * ID in the loaded Dataset of the CSV file from sk-cs-hu-spark.
+         */
         jsonSk = jsonSk.join(
             langIds,
             jsonSk.col("id").equalTo(langIds.col("sk_id"))
@@ -99,6 +123,9 @@ public class DocumentParser {
             jsonHu.col("text")
         );
 
+        /*
+         * Extracted articles are stored in directories for each language.
+         */
         jsonSk.write().json("documents-sk-spark");
         jsonCs.write().json("documents-cs-spark");
         jsonHu.write().json("documents-hu-spark");
