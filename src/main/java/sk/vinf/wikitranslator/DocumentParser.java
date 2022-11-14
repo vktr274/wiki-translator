@@ -127,8 +127,13 @@ public class DocumentParser {
          * Extracted articles are stored in directories for each language.
          */
         jsonSk.write().json("documents-sk-spark");
+        System.out.println("Saved " + jsonSk.count() + " SK documents");
+
         jsonCs.write().json("documents-cs-spark");
+        System.out.println("Saved " + jsonCs.count() + " CS documents");
+
         jsonHu.write().json("documents-hu-spark");
+        System.out.println("Saved " + jsonHu.count() + " HU documents");
 
         sparkSession.close();
     }
