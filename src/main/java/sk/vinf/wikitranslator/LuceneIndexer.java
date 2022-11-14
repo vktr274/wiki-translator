@@ -64,7 +64,7 @@ public class LuceneIndexer {
     }
 
     /**
-     * indexLanguage creates an index of documents in a language specified by `lang`
+     * indexLanguage creates an index of documents in a language specified by lang
      * @param lang language of documents to be indexed
      * @throws IOException
      * @throws NullPointerException

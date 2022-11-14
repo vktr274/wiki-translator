@@ -24,7 +24,7 @@ public class TranslationFinder {
      * find initiates connection to a local MySQL database based on a username
      * USER and password PW in a .env file in the root directory of the project.
      * Then it finds IDs of Slovak articles and IDs of their corresponding
-     * translations to the language `lang`.
+     * translations to the language lang.
      * @param lang Language to find translations to from Slovak
      * @throws SQLException
      * @throws IOException
@@ -91,7 +91,7 @@ public class TranslationFinder {
     /**
      * conjunctionSpark initiates a connection to a local Spark cluster which has to have
      * 1 master node and at least 1 worker node running and then joins the sk-cs.csv and
-     * sk-hu.csv files based on `sk_id`. The resulting files are stored in the sk-cs-hu-spark
+     * sk-hu.csv files based on sk_id. The resulting files are stored in the sk-cs-hu-spark
      * directory.
      * @throws StreamingQueryException
      * @throws TimeoutException
