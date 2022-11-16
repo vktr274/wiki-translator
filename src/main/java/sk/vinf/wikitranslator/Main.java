@@ -13,7 +13,8 @@ public class Main
             try {
                 lang = scanner.nextLine();
             } catch (Exception e) {
-                continue;
+                e.printStackTrace();
+                System.out.println("Input error! Check message above.");
             }
         }
         scanner.close();
@@ -31,7 +32,7 @@ public class Main
         System.out.println("4. create docs with Spark");
         System.out.println("5. create ID mapping");
         System.out.println("6. create Lucene index");
-        System.out.println("7. use translation search (use 'exit' for quitting)");
+        System.out.println("7. use translation search (type 'exit' for quitting search mode)");
         
         while (true) {
             try {
@@ -39,9 +40,9 @@ public class Main
                 break;
             } catch (NumberFormatException e) {
                 System.out.println("Enter integer!");
-                continue;
             } catch (Exception e) {
                 e.printStackTrace();
+                System.out.println("Error! Check message above.");
                 scanner.close();
                 return;
             }
@@ -54,7 +55,8 @@ public class Main
                     TranslationFinder.find(getLang(List.of("cs", "hu")));
                     System.out.println("Success");
                 } catch (Exception e) {
-                    System.out.println("Error");
+                    e.printStackTrace();
+                    System.out.println("Error! Check message above.");
                 }
                 break;
             case 3:
@@ -63,7 +65,7 @@ public class Main
                     System.out.println("Success");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("Error");
+                    System.out.println("Error! Check message above.");
                 }
                 break;
             case 4:
@@ -72,7 +74,7 @@ public class Main
                     System.out.println("Success");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("Error");
+                    System.out.println("Error! Check message above.");
                 }
                 break;
             case 5:
@@ -80,7 +82,8 @@ public class Main
                     TranslationMapper.mapLanguages();
                     System.out.println("Success");
                 } catch (Exception e) {
-                    System.out.println("Error");
+                    e.printStackTrace();
+                    System.out.println("Error! Check message above.");
                 }
                 break;
             case 6:
@@ -91,7 +94,7 @@ public class Main
                     System.out.println("Success");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("Error");
+                    System.out.println("Error! Check message above.");
                 }
                 break;
             case 7:
@@ -100,10 +103,12 @@ public class Main
                     luceneSearch.start();
                     System.out.println("Success");
                 } catch (Exception e) {
-                    System.out.println("Error");
+                    e.printStackTrace();
+                    System.out.println("Error! Check message above.");
                 }
                 break;
             default:
+                System.out.println("Unknown command!");
                 break;
         }
 
