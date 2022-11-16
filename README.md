@@ -100,7 +100,7 @@ spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --cores
 spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --cores 4 --memory 1G
 ```
 
-Nasledovne je možné spustiť WikiTranslator (Apache Spark používajú iba dva príkazy, a to `3` a `4` - iba tie vyžadujú bežiaci master node a bežiace worker node-y).
+Následne je možné spustiť príkazy WikiTranslator-u, ktoré využívajú Apache Spark. Apache Spark (teda bežiaci master node a bežiace worker node-y) používajú iba dva príkazy, a to `3` a `4`.
 
 Zoznam príkazov v aplikácii WikiTranslator je (spúšťajú sa ich poradovým číslom):
 
