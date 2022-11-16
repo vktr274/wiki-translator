@@ -83,6 +83,8 @@ Dependencies pre Spark **musia** byť nastavené nasledovne, keďže použitá v
 
 K Java argumentom treba pridať `--add-exports java.base/sun.nio.ch=ALL-UNNAMED`.
 
+V projekte sa používa [Standalone Mode](https://spark.apache.org/docs/latest/spark-standalone.html) pri vykonávaní častí aplikácie distribuovane a je potrebné spustiť master node a worker node-y nasledovne:
+
 Master node sa spúšťa pomocou `spark-class org.apache.spark.deploy.master.Master --host localhost`.
 
 Worker node-y sa spúšťajú pomocou `spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --memory <worker-memory> --cores <worker-threads>`, kde
@@ -98,7 +100,7 @@ spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --cores
 spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --cores 4 --memory 1G
 ```
 
-Nasledovne je možné spustiť WikiTranslator.
+Nasledovne je možné spustiť WikiTranslator (Apache Spark používajú iba dva príkazy, a to `3` a `4` - iba tie vyžadujú bežiaci master node a bežiace worker node-y).
 
 Zoznam príkazov v aplikácii WikiTranslator je (spúšťajú sa ich poradovým číslom):
 
