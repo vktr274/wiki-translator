@@ -24,8 +24,10 @@ public class DocumentParser {
      * @throws TimeoutException
      */
     public static void createDocsSpark() throws StreamingQueryException, TimeoutException {
-        var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
-        var sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();
+        var sparkConf = new SparkConf()
+            .setAppName("WikiTranslator")
+            .setMaster("spark://localhost:7077");
+        SparkSession sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();
         sparkSession.sparkContext().setLogLevel("ERROR");
 
         StructType jsonSchema = new StructType()

@@ -98,7 +98,9 @@ public class TranslationFinder {
      * @throws IOException
      */
     public static void conjunctionSpark() throws StreamingQueryException, TimeoutException, IOException {
-        var sparkConf = new SparkConf().setAppName("WikiTranslator").setMaster("spark://localhost:7077");
+        var sparkConf = new SparkConf()
+            .setAppName("WikiTranslator")
+            .setMaster("spark://localhost:7077");
         SparkSession sparkSession = SparkSession.builder().config(sparkConf).getOrCreate();
         sparkSession.sparkContext().setLogLevel("ERROR");
 
@@ -127,5 +129,7 @@ public class TranslationFinder {
             csvSkCs.col("sk_id").equalTo(csvSkHu.col("sk_id"))
         ).select(csvSkCs.col("sk_id"), csvSkCs.col("cs_id"), csvSkHu.col("hu_id"));
         joined.write().option("header", "true").csv("sk-cs-hu-spark");
+
+        sparkSession.close();
     }
 }
