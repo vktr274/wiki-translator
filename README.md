@@ -111,7 +111,7 @@ Zoznam príkazov v aplikácii WikiTranslator je (spúšťajú sa ich poradovým 
 4. create docs with Spark
 5. create ID mapping
 6. create Lucene index
-7. use translation search (use 'exit' for quitting)
+7. use translation search (type 'exit' for quitting search mode)
 ```
 
 ### Dáta
@@ -169,7 +169,7 @@ Pred prvým vyhľadávaním treba spustiť príkaz `5`, ktorý vytvorí 3 JSON s
 }
 ```
 
-Syntax vyhľadávača je `lang:at:qtext`, kde:
+Vyhľadávač sa spúšťa príkazom `7` a jeho syntax je `lang:at:qtext`, kde:
 
 - `lang` je jazyk, v dokumentoch ktorého chceme vyhľadávať. Može to byť `sk`, `cs` alebo `hu`,
 - `at` je pole, v ktorom chceme vyhľadávať. Môže to byť rôzna kombinácia názvov (pole `title` = `T`) a textov (pole `text` = `t`) článkov. Môže to byť `T`, `t`, `T&t`, `t&T`, `T|t` alebo `t|T`. `T`, kde znak `&` znamená 'a zároveň' a znak `|` znamená 'alebo'.
