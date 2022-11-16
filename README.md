@@ -85,7 +85,18 @@ K Java argumentom treba pridať `--add-exports java.base/sun.nio.ch=ALL-UNNAMED`
 
 Master node sa spúšťa pomocou `spark-class org.apache.spark.deploy.master.Master --host localhost`.
 
-Worker node-y sa spúšťajú pomocou `spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077`.
+Worker node-y sa spúšťajú pomocou `spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --memory <worker-memory> --cores <worker-threads>`, kde
+
+`<worker-memory>` treba nahradiť veľkosťou pamäte, ktorú bude môcť daný worker využiť (stačí `1G`, keďže aplikácia WikiTranslator použije no danom worker node iba 1GB, čo je default nastavenie),
+
+`<worker-threads>` treba nahradiť počtom vlákien CPU, ktoré môže daný worker používať (napr. ak máme 8 vlákien CPU a chceme spustiť 2 worker node-y, tak pre každý nastavíme hodnotu `4`).
+
+**Príklad:**
+
+```cmd
+spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --cores 4 --memory 1G
+spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --cores 4 --memory 1G
+```
 
 Nasledovne je možné spustiť WikiTranslator.
 
