@@ -43,6 +43,8 @@ Medzijazyčné odkazy sú uchovávané v relačnej databáze v tabuľke *langlin
 
 ## Verzia 2
 
+**Kód pre druhú verziu s Apache Lucene indexom a vyhľadávaním a s distribuovaným spracovaním pomocou Apache Spark sa nachádza v release [2.0](https://github.com/vktr274/wiki-translator/releases/tag/v2).**
+
 V druhej verzii je index vytvorený použitím Apache Lucene. Dáta, ktoré sa indexovali boli distribuovane predspracované pomocou Apache Spark.
 
 Použitie správnych verzií Apache Spark je dôležité pre správne fungovanie distribuovaného spracovania. Boli použité verzie:

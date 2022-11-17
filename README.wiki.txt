@@ -3,6 +3,8 @@
 **Autor:** Viktor Modroczký\\
 **Predmet:** Vyhľadávanie informácií
 
+**GitHub Repo:** [[https://github.com/vktr274/wiki-translator|WikiTranslator]]
+
 Téma projektu je **Vytvorenie multilingvistického slovníka z wikipédie slovenčina vs. iné jazyky (aspoň 2), vytvoriť spoločný slovník spájajúci jazyky s možnosťou vyhľadávania**.
 
 Projekt je riešený v jazyku **Java 17** s build nástrojom **Maven**.
@@ -41,6 +43,8 @@ Na každej Wikipedia stránke je v ľavom paneli sekcia //V iných jazykoch// (o
 Medzijazyčné odkazy sú uchovávané v relačnej databáze v tabuľke //langlinks// (bude sa používať tabuľka pre slovenskú Wikipediu). Tabuľka obsahuje 3 stĺpce, a to ''%%ll_from%%'', ''%%ll_lang%%'' a ''%%ll_title%%''. Stĺpec ''%%ll_from%%'' je ''%%page_id%%'' odkazujúceho slovenského článku, ''%%ll_lang%%'' je kód jazyka cieľového článku a ''%%ll_title%%'' je názov cieľového článku v jazyku ''%%ll_lang%%''.
 
 ===== Verzia 2 =====
+
+**Kód pre druhú verziu s Apache Lucene indexom a vyhľadávaním a s distribuovaným spracovaním pomocou Apache Spark sa nachádza v release [[https://github.com/vktr274/wiki-translator/releases/tag/v2|2.0]].**
 
 V druhej verzii je index vytvorený použitím Apache Lucene. Dáta, ktoré sa indexovali boli distribuovane predspracované pomocou Apache Spark.
 
@@ -263,7 +267,7 @@ ID Language Title
 --------------------------------------
 </code>
 
-Celý výsledok je v súbore output.json.
+Celý výsledok je v súbore [[https://github.com/vktr274/wiki-translator/blob/master/output.json|output.json]].
 
 ===== Verzia 1 =====
 
