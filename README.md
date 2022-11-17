@@ -127,16 +127,10 @@ V *langlinks* tabuľke sa hľadajú odkazy na preklady slovenských článkov ta
 
 Na nájdenie `sk - cs` alebo `sk - hu` párov ID slúži v aplikácii WikiTranslator príkaz `2`. Následne sa pomocou distribuovaného spracovania so Spark dá spustením programu príkazom `3` vytvoriť prienik `sk - cs - hu`. Súbory `sk-cs.csv` a `sk-hu.csv` pre páry ID a aj Sparkom vygenerovaný prienik (adresár `sk-cs-hu-spark`) sú už vygenerované v repozitári projektu, netreba ich generovať znovu.
 
-Ďalším krokom je spracovanie Wikipedia dumpov pomocou nástroja [WikiExtractor](https://github.com/attardi/wikiextractor), ktorý vyčistí XML dump súbory od WikiText syntaxe a zachová články v JSON Lines súboroch so schémou:
+Ďalším krokom je spracovanie Wikipedia dumpov pomocou nástroja [WikiExtractor](https://github.com/attardi/wikiextractor), ktorý vyčistí XML dump súbory od WikiText syntaxe a zachová články v [JSON Lines](https://jsonlines.org/) súboroch so schémou:
 
 ```json
-{
-    "id": "id_value",
-    "revid": "revid_value",
-    "url": "url_value",
-    "title": "title_value",
-    "text": "text_value"
-}
+{ "id": "id_value", "revid": "revid_value", "url": "url_value", "title": "title_value", "text": "text_value" }\n
 ```
 
 Nástroj treba spustiť v Docker kontajneri pomocou príkazov:
@@ -151,7 +145,11 @@ Nástroj sa spúšťa pre každý jazyk zvlášť:
 - Pre `cs` jazyk v priečinku `dataset/cs-articles`, kde sa musí nachádzať dump `cswiki-latest-pages-articles.xml.bz2`.
 - Pre `hu` jazyk v priečinku `dataset/hu-articles`, kde sa musí nachádzať dump `huwiki-latest-pages-articles.xml.bz2`.
 
-Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Zo spracovaných XML dumpov sa teda podľa zoznamu trojíc ID `sk - cs - hu` vyberú potrebné články, z ktorých sa vytvoria `sk`, `cs` a `hu` dokumenty. Na to slúži príkaz `4`. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomocou Apache Lucene budú indexovať.
+Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Zo spracovaných XML dumpov sa teda podľa zoznamu trojíc ID `sk - cs - hu` vyberú potrebné články, z ktorých sa vytvoria `sk`, `cs` a `hu` dokumenty. Na to slúži príkaz `4`. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomocou Apache Lucene budú indexovať. Dokumenty sa uložia do priečinkov `documents-sk-spark`, `documents-cs-spark` a `documents-hu-spark`. Tieto priečinky obsahujú JSON Lines súbory, v ktorých sú dokumenty uložené. Scháma súborov je:
+
+```json
+{ "id": "id_value", "title": "title_value", "text": "text_value" }\n
+```
 
 Spracované dáta pripravené na indexovanie sú dostupné na [Google Drive](https://drive.google.com/drive/folders/1lz1lO7snfa_qwWuC2Gp_dIMLVKUsBXoq?usp=share_link). Priečinky `documents-sk-spark`, `documents-cs-spark` a `documents-hu-spark` musia byť v koreňovom adresári projektu. V každom z nich je 63926 dokumentov.
 
