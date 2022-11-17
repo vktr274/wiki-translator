@@ -100,7 +100,21 @@ spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --cores
 spark-class org.apache.spark.deploy.worker.Worker spark://localhost:7077 --cores 4 --memory 1G
 ```
 
+Po spustení master a worker node-ov je možné skontrolovať ich stav na `http://localhost:8080/`.
+
+![localhost:8080](localhost8080.png)
+
 Následne je možné spustiť príkazy WikiTranslator-u, ktoré využívajú Apache Spark. Apache Spark (teda bežiaci master node a bežiace worker node-y) používajú iba dva príkazy, a to `3` a `4`.
+
+Aplikáciu spustenú na Apache Spark je možné taktiež skontrolovať na `http://localhost:8080/`.
+
+Celkový prehľad:
+
+![localhost:8080-withApp](localhost8080withApp.png)
+
+Detail aplikácie:
+
+![localhost:8080-appDetail](localhost8080appDetail.png)
 
 Zoznam príkazov v aplikácii WikiTranslator je (spúšťajú sa ich poradovým číslom):
 
@@ -109,8 +123,8 @@ Zoznam príkazov v aplikácii WikiTranslator je (spúšťajú sa ich poradovým 
 2. find article ID pairs
 3. create sk-cs-hu ID conjunction with Spark
 4. create docs with Spark
-5. create ID mapping
-6. create Lucene index
+5. create Lucene index
+6. create ID mapping
 7. use translation search (type 'exit' for quitting search mode)
 ```
 
@@ -155,11 +169,11 @@ Spracované dáta pripravené na indexovanie sú dostupné na [Google Drive](htt
 
 ### Indexovanie
 
-Na vytvorenie indexov slúži príkaz `6`. Aplikácia dáva na výber vytvorenie indexov pre `sk`, `cs` a `hu` dokumenty zvlášť. Polia `title` a `text` sa indexujú na vyhľadávanie používateľom zadaného textu. Pole `id` sa indexuje iba na to, aby sme vedeli rýchlo vyhľadať preklady k daným dokumentom. Index je dostupný na [Google Drive](https://drive.google.com/drive/folders/1lz1lO7snfa_qwWuC2Gp_dIMLVKUsBXoq?usp=share_link). Adresár `index` musí byť v koreňovom adresári projektu.
+Na vytvorenie indexov slúži príkaz `5`. Aplikácia dáva na výber vytvorenie indexov pre `sk`, `cs` a `hu` dokumenty zvlášť. Polia `title` a `text` sa indexujú na vyhľadávanie používateľom zadaného textu. Pole `id` sa indexuje iba na to, aby sme vedeli rýchlo vyhľadať preklady k daným dokumentom. Index je dostupný na [Google Drive](https://drive.google.com/drive/folders/1lz1lO7snfa_qwWuC2Gp_dIMLVKUsBXoq?usp=share_link). Adresár `index` musí byť v koreňovom adresári projektu.
 
 ### Vyhľadávanie
 
-Pred prvým vyhľadávaním treba spustiť príkaz `5`, ktorý vytvorí 3 JSON súbory, a to `sk-map.json`, `cs-map.json` a `hu-map.json`. Tieto súbory sú už vygenerované v repozitári projektu, netreba preto príkaz spúšťať. Tieto súbory slúžia na rýchle zistenie ID prekladov článkov pri vyhľadávaní. Schéma JSON súborov je:
+Pred prvým vyhľadávaním treba spustiť príkaz `6`, ktorý vytvorí 3 JSON súbory, a to `sk-map.json`, `cs-map.json` a `hu-map.json`. Tieto súbory sú už vygenerované v repozitári projektu, netreba preto príkaz spúšťať. Tieto súbory slúžia na rýchle zistenie ID prekladov článkov pri vyhľadávaní. Schéma JSON súborov je:
 
 ```json
 {
