@@ -7,6 +7,8 @@ Téma projektu je **Vytvorenie multilingvistického slovníka z wikipédie slove
 
 Projekt je riešený v jazyku **Java 17** s build nástrojom **Maven**.
 
+Ide o nástroj pre tzv. Cross-language Information Retrieval (CLIR). CLIR je oblasť vyhľadávania informácií, ktorá sa zaoberá vyhľadávaním informácií v iných jazykoch ako jazyk dopytu používateľa [[1]](#1). Riešenie sa môže považovať za implementáciu CLIR pomocou Dictionary-Based Query Translation (DBQT), ktoré spočíva v tom, že sú paralelné texty dopredu vydolované (napr. z Wikipedie) a ich mapovanie je uložené v slovníku [[2]](#2). Preklady sa vyhľadávajú tak, že sa v zdrojovom jazyku vyhľadajú dopytu vyhovujúce dokumenty a zároveň ich preklady do ďalších dvoch jazykov.
+
 ## Rámce a knižnice
 
 ### Vo verzii 2
@@ -39,11 +41,15 @@ Na každej Wikipedia stránke je v ľavom paneli sekcia *V iných jazykoch* (obr
 
 ![Preklady](wiki-preklady.png)
 
-Medzijazyčné odkazy sú uchovávané v relačnej databáze v tabuľke *langlinks* (bude sa používať tabuľka pre slovenskú Wikipediu). Tabuľka obsahuje 3 stĺpce, a to `ll_from`, `ll_lang` a `ll_title`. Stĺpec `ll_from` je `page_id` odkazujúceho slovenského článku, `ll_lang` je kód jazyka cieľového článku a `ll_title` je názov cieľového článku v jazyku `ll_lang`.
+Medzijazyčné odkazy sú uchovávané v relačnej databáze v tabuľke [*langlinks*](https://www.mediawiki.org/wiki/Manual:Langlinks_table) (bude sa používať tabuľka pre slovenskú Wikipediu). Tabuľka obsahuje 3 stĺpce, a to `ll_from`, `ll_lang` a `ll_title`. Stĺpec `ll_from` je `page_id` odkazujúceho slovenského článku, `ll_lang` je kód jazyka cieľového článku a `ll_title` je názov cieľového článku v jazyku `ll_lang`.
 
 ## Verzia 2
 
 **Kód pre druhú verziu s Apache Lucene indexom a vyhľadávaním a s distribuovaným spracovaním pomocou Apache Spark sa nachádza v release [2.0](https://github.com/vktr274/wiki-translator/releases/tag/v2).**
+
+**Schéma:**
+
+![Schema](WikiTranslatorSchema.png)
 
 V druhej verzii je index vytvorený použitím Apache Lucene. Dáta, ktoré sa indexovali boli distribuovane predspracované pomocou Apache Spark.
 
@@ -139,7 +145,7 @@ USER=database_owner
 PW=password
 ```
 
-V *langlinks* tabuľke sa hľadajú odkazy na preklady slovenských článkov tak, že z nej vyberieme hodnoty `ll_title`, ak sa `ll_lang` rovná `cs` alebo `hu`. Hodnota `ll_from` je ID slovenského článku. Podľa `ll_title` potom vyberáme z českej alebo maďarskej tabuľky *page* korešpondujúce ID českého alebo maďarského článku.
+V [*langlinks*](https://www.mediawiki.org/wiki/Manual:Langlinks_table) tabuľke sa hľadajú odkazy na preklady slovenských článkov tak, že z nej vyberieme hodnoty `ll_title`, ak sa `ll_lang` rovná `cs` alebo `hu`. Hodnota `ll_from` je ID slovenského článku. Podľa `ll_title` potom vyberáme z českej alebo maďarskej tabuľky [*page*](https://www.mediawiki.org/wiki/Manual:Page_table) korešpondujúce ID českého alebo maďarského článku.
 
 Na nájdenie `sk - cs` alebo `sk - hu` párov ID slúži v aplikácii WikiTranslator príkaz `2`. Následne sa pomocou distribuovaného spracovania so Spark dá spustením programu príkazom `3` vytvoriť prienik `sk - cs - hu`. Súbory `sk-cs.csv` a `sk-hu.csv` pre páry ID a aj Sparkom vygenerovaný prienik (adresár `sk-cs-hu-spark`) sú už vygenerované v repozitári projektu, netreba ich generovať znovu.
 
@@ -161,7 +167,7 @@ Nástroj sa spúšťa pre každý jazyk zvlášť:
 - Pre `cs` jazyk v priečinku `dataset/cs-articles`, kde sa musí nachádzať dump `cswiki-latest-pages-articles.xml.bz2`.
 - Pre `hu` jazyk v priečinku `dataset/hu-articles`, kde sa musí nachádzať dump `huwiki-latest-pages-articles.xml.bz2`.
 
-Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Zo spracovaných XML dumpov sa teda podľa zoznamu trojíc ID `sk - cs - hu` vyberú potrebné články, z ktorých sa vytvoria `sk`, `cs` a `hu` dokumenty. Na to slúži príkaz `4`. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomocou Apache Lucene budú indexovať. Dokumenty sa uložia do priečinkov `documents-sk-spark`, `documents-cs-spark` a `documents-hu-spark`. Tieto priečinky obsahujú JSON Lines súbory, v ktorých sú dokumenty uložené. Scháma súborov je:
+Po dokončení čistenia XML súborov je posledným krokom vytvárania dát na indexovanie vytvorenie samotných dokumentov pre slovenské články a ich české a maďarské preklady. Zo spracovaných XML dumpov sa teda podľa zoznamu trojíc ID `sk - cs - hu` vyberú potrebné články, z ktorých sa vytvoria `sk`, `cs` a `hu` dokumenty. Na to slúži príkaz `4`. Dokumenty majú 3 polia, a to `id`, `title` a `text`, ktoré sa pomocou Apache Lucene budú indexovať. Dokumenty sa uložia do priečinkov `documents-sk-spark`, `documents-cs-spark` a `documents-hu-spark`. Tieto priečinky obsahujú [JSON Lines](https://jsonlines.org/) súbory, v ktorých sú dokumenty uložené. Scháma súborov je:
 
 ```json
 { "id": "id_value", "title": "title_value", "text": "text_value" }\n
@@ -272,7 +278,7 @@ Celý výsledok je v súbore [output.json](output.json).
 
 **Kód pre prvú verziu s vlastným indexom, vlastným vyhľadávaním a bez distribuovaného spracovania sa nachádza v release [1.0](https://github.com/vktr274/wiki-translator/releases/tag/v1).**
 
-V tabuľke *langlinks* budeme vyhľadávať preklady článkov podľa kódov jazykov pomocou stĺpca `ll_lang`. Názvy článkov v slovenčine nájdeme pomocou hodnoty zo stĺpca `ll_from`, a to tak, že v tabuľke *page* pre slovenské články nájdeme `page_title` slovenských názvov podľa hodnôt `page_id`, ktoré zodpovedajú hodnotám `ll_from` v tabuľke *langlinks*. Hodnoty `ll_title` sa budú ukladať ako preklady slovenských názvov. Prekladač bude vytvorený vo forme vyhľadávača, ktorý bude vracať výsledky na základe zadanej požiadavky. Napr. sa zadá slovo a jazyk, v ktorom sa má dané slovo vyhľadať, a potom sa vrátia všetky dokumenty (názvy článkov) aj s prekladmi do ostatných 2 jazykov, ktoré obsahujú dané slovo.
+V tabuľke [*langlinks*](https://www.mediawiki.org/wiki/Manual:Langlinks_table) budeme vyhľadávať preklady článkov podľa kódov jazykov pomocou stĺpca `ll_lang`. Názvy článkov v slovenčine nájdeme pomocou hodnoty zo stĺpca `ll_from`, a to tak, že v tabuľke [*page*](https://www.mediawiki.org/wiki/Manual:Page_table) pre slovenské články nájdeme `page_title` slovenských názvov podľa hodnôt `page_id`, ktoré zodpovedajú hodnotám `ll_from` v tabuľke [*langlinks*](https://www.mediawiki.org/wiki/Manual:Langlinks_table). Hodnoty `ll_title` sa budú ukladať ako preklady slovenských názvov. Prekladač bude vytvorený vo forme vyhľadávača, ktorý bude vracať výsledky na základe zadanej požiadavky. Napr. sa zadá slovo a jazyk, v ktorom sa má dané slovo vyhľadať, a potom sa vrátia všetky dokumenty (názvy článkov) aj s prekladmi do ostatných 2 jazykov, ktoré obsahujú dané slovo.
 
 ### Formát dokumentov
 
@@ -352,3 +358,9 @@ Program sa ukončuje príkazom `exit`.
 
 Vidíme, že na prvom mieste je výsledok, ktorý v slovenčine obsahuje slová *covid* aj *test*, keďže je najrelevantnejší.
 Ďalšie výsledky obsahujú iba jedno zo slov.
+
+## Referencie
+
+<a id="1">[1]</a> Pirkola, A., Hedlund, T., Keskustalo, H. and Järvelin, K., 2001. Dictionary-based cross-language information retrieval: Problems, methods, and research findings. Information retrieval, 4(3), pp.209-230. DOI: [10.1023/A:1011994105352](https://doi.org/10.1023/A:1011994105352).
+
+<a id="2">[2]</a> Galuščáková, P., Oard, D.W. and Nair, S., 2021. Cross-language Information Retrieval. arXiv preprint arXiv:2111.05988. DOI: [10.48550/arXiv.2111.05988](https://doi.org/10.48550/arXiv.2111.05988)
