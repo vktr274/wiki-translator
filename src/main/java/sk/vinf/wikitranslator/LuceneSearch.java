@@ -80,7 +80,7 @@ public class LuceneSearch {
         while (true) {
             System.out.println("Enter query");
             var input = scanner.nextLine();
-            if (input.equals("exit")) {
+            if (input.toLowerCase().equals("exit")) {
                 break;
             }
             var result = new HashMap<String, ArrayList<HashMap<String, HashMap<String, String>>>>();

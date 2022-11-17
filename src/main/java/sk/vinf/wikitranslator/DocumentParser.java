@@ -127,15 +127,16 @@ public class DocumentParser {
 
         /*
          * Extracted articles are stored in directories for each language.
+         * Using count() adds execution time so the lines are commented out.
          */
         jsonSk.write().json("documents-sk-spark");
-        System.out.println("Saved " + jsonSk.count() + " SK documents");
+        //System.out.println("Saved " + jsonSk.count() + " SK documents");
 
         jsonCs.write().json("documents-cs-spark");
-        System.out.println("Saved " + jsonCs.count() + " CS documents");
+        //System.out.println("Saved " + jsonCs.count() + " CS documents");
 
         jsonHu.write().json("documents-hu-spark");
-        System.out.println("Saved " + jsonHu.count() + " HU documents");
+        //System.out.println("Saved " + jsonHu.count() + " HU documents");
 
         sparkSession.close();
     }

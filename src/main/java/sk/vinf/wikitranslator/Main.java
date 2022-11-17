@@ -8,7 +8,7 @@ public class Main
     private static String getLang(List<String> langs) {
         var scanner = new Scanner(System.in);
         var lang = "";
-        while (!langs.contains(lang)) {
+        while (!langs.contains(lang.toLowerCase())) {
             System.out.println("Enter language from " + langs);
             try {
                 lang = scanner.nextLine();
@@ -30,8 +30,8 @@ public class Main
         System.out.println("2. find article ID pairs");
         System.out.println("3. create sk-cs-hu ID conjunction with Spark");
         System.out.println("4. create docs with Spark");
-        System.out.println("5. create ID mapping");
-        System.out.println("6. create Lucene index");
+        System.out.println("5. create Lucene index");
+        System.out.println("6. create ID mapping");
         System.out.println("7. use translation search (type 'exit' for quitting search mode)");
         
         while (true) {
@@ -79,7 +79,7 @@ public class Main
                 break;
             case 5:
                 try {
-                    TranslationMapper.mapLanguages();
+                    LuceneIndexer.indexLanguage(getLang(List.of("sk", "cs", "hu")));
                     System.out.println("Success");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -88,9 +88,7 @@ public class Main
                 break;
             case 6:
                 try {
-                    LuceneIndexer.indexLanguage(getLang(
-                        List.of("sk", "cs", "hu")
-                    ));
+                    TranslationMapper.mapLanguages();
                     System.out.println("Success");
                 } catch (Exception e) {
                     e.printStackTrace();
