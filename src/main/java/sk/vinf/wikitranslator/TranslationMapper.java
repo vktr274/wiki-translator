@@ -23,7 +23,7 @@ public class TranslationMapper {
     /**
      * getStream walks the dir directory and returns a stream of CSV records.
      * @param dir directory of the joined CSV file (sk-cs-hu-spark is used in this project)
-     * @return Stream<CSVRecord> stream of CSVRecords from the directory dir
+     * @return stream of CSVRecords from the directory dir
      * @throws IOException
      */
     private static Stream<CSVRecord> getStream(String dir) throws IOException {

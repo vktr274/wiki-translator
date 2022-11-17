@@ -102,13 +102,14 @@ public class LuceneSearch {
      * in the input language and finally it searches for these translations by IDs.
      * Output of this search is the constructed search result.
      * @param inputQuery
-     * @return ArrayList<HashMap<String, HashMap<String, String>>> constructed serach result
+     * @return constructed search result
      * @throws IllegalArgumentException
      * @throws IOException
      * @throws ParseException
      * @throws NullPointerException
      */
-    private ArrayList<HashMap<String, HashMap<String, String>>> search(String inputQuery) throws IllegalArgumentException, IOException, ParseException, NullPointerException {
+    private ArrayList<HashMap<String, HashMap<String, String>>> search(String inputQuery) throws
+    IllegalArgumentException, IOException, ParseException, NullPointerException {
         if (!checkInput(inputQuery)) {
             throw new IllegalArgumentException("Query should have a lang:at:qtext syntax");
         }
@@ -124,7 +125,7 @@ public class LuceneSearch {
         } else if (lang.equals("hu")) {
             analyzer = new HungarianAnalyzer();
         } else {
-            throw new NullPointerException("Analyzer is null");
+            throw new NullPointerException("Invalid language. Analyzer is null.");
         }
 
         var directory = FSDirectory.open(Path.of("index", lang));

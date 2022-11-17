@@ -33,12 +33,13 @@ public class LuceneIndexer {
      * getStream walks the dir directory and returns a stream of JSONs
      * of documents represented by HashMaps.
      * @param dir directory of the JSON files of documents to get indexed
-     * @return Stream<HashMap<String, String>> stream of JSONs from the directory dir
+     * @return stream of JSONs from the directory dir
      * @throws IOException
      * @throws JsonParseException
      * @throws JsonSyntaxException
      */
-    private static Stream<HashMap<String, String>> getStream(String dir) throws IOException, JsonParseException, JsonSyntaxException {
+    private static Stream<HashMap<String, String>> getStream(String dir) throws
+    IOException, JsonParseException, JsonSyntaxException {
         var type = new TypeToken<HashMap<String, String>>(){}.getType();
         var gson = new Gson();
         return Files
@@ -86,7 +87,7 @@ public class LuceneIndexer {
             analyzer = new HungarianAnalyzer();
             stream = getStream("documents-hu-spark");
         } else {
-            throw new NullPointerException("Analyzer|CSVParser is null");
+            throw new NullPointerException("Invalid language. Analyzer and Stream<HashMap<String, String>> are null.");
         }
 
         var config = new IndexWriterConfig(analyzer);
