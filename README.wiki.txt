@@ -46,7 +46,7 @@ Medzijazyčné odkazy sú uchovávané v relačnej databáze v tabuľke //langli
 
 ===== Verzia 2 =====
 
-**Kód pre druhú verziu s Apache Lucene indexom a vyhľadávaním a s distribuovaným spracovaním pomocou Apache Spark sa nachádza v release [[https://github.com/vktr274/wiki-translator/releases/tag/v2.0.1|2.0.1]].**
+**Kód pre druhú verziu s Apache Lucene indexom a vyhľadávaním a s distribuovaným spracovaním pomocou Apache Spark sa nachádza v release [[https://github.com/vktr274/wiki-translator/releases/tag/v2.0.2|2.0.2]].**
 
 **Schéma:**
 
